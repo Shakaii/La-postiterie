@@ -162,4 +162,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+### Vuejs ###
+node_modules
+.DS_Store
+docs/_book
+test/
+
 # End of https://www.gitignore.io/api/node,macos,linux,windows,visualstudiocode
