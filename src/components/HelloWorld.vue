@@ -22,7 +22,13 @@
 
 <script>
 
-function imagedata_to_image(imagedata) {
+/* 
+  FUNCTION imageDataToImage
+  transform an imageData to an image
+  IN : imageData
+  OUT : image
+*/
+function imageDataToImage(imagedata) {
     let canvas = document.createElement('canvas');
     let ctx = canvas.getContext('2d');
     canvas.width = imagedata.width;
@@ -34,14 +40,20 @@ function imagedata_to_image(imagedata) {
     return image;
 }
 
+/*
+  FUNCTION crop
+  Crop an image using the coordinates and return its imageData
+  IN : x, y (numbers) coordinates from which to start croping
+       width, height (numbers) length to crop
+  OUT: imageData
+*/
 function crop(x, y, width, height){
-          let canvas = document.createElement('canvas');
-          let context = canvas.getContext('2d');
-          let img = document.getElementById('postit');
-          context.drawImage(img, 0, 0, );
-          let theData = context.getImageData(x, y, width, height);
-          document.getElementById("result").appendChild(imagedata_to_image(theData));
-    }
+  let canvas = document.createElement('canvas');
+  let context = canvas.getContext('2d');
+  let img = document.getElementById('postit');
+  context.drawImage(img, 0, 0, );
+  return context.getImageData(x, y, width, height);
+}
 
 
 export default {
@@ -65,7 +77,6 @@ export default {
         },
     traite: function () {
       var img = document.getElementById('postit');
-      console.log(img)
       var demoContainer = document.querySelector('.container');
 
       var tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
@@ -73,7 +84,9 @@ export default {
       tracker.on('track', function(event) {
         event.data.forEach(function(rect) {
           window.plot(rect.x, rect.y, rect.width, rect.height, rect.color);
-          crop(rect.x,rect.y,rect.width,rect.height);
+          let croppedImageData = crop(rect.x,rect.y,rect.width,rect.height);
+          let croppedImage = imageDataToImage(croppedImageData);
+          document.getElementById("result").appendChild(croppedImage);
         });
       });
 
@@ -81,7 +94,7 @@ export default {
       
       //draw a square on the image (useless but looks good)
       window.plot = function(x, y, w, h, color) {
-        var rect = document.createElement('div');
+        let rect = document.createElement('div');
         document.querySelector('.container').appendChild(rect);
         rect.classList.add('rect');
         rect.style.border = '2px solid ' + color;
