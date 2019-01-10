@@ -11,12 +11,39 @@
       </div>
     </div>
     <button @click="traite">Traiter</button>
+    <div id="result"></div>
   </div>
   
 </template>
 <script src="../src/tracking.js"></script>
 
+
+
+
 <script>
+
+function imagedata_to_image(imagedata) {
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
+    canvas.width = imagedata.width;
+    canvas.height = imagedata.height;
+    ctx.putImageData(imagedata, 0, 0);
+
+    let image = new Image();
+    image.src = canvas.toDataURL();
+    return image;
+}
+
+function crop(x, y, width, height){
+          let canvas = document.createElement('canvas');
+          let context = canvas.getContext('2d');
+          let img = document.getElementById('postit');
+          context.drawImage(img, 0, 0 );
+          let theData = context.getImageData(x, y, width, height);
+          document.getElementById("result").appendChild(imagedata_to_image(theData));
+    }
+
+
 export default {
   name: 'HelloWorld',
   props: {
@@ -46,6 +73,7 @@ export default {
       tracker.on('track', function(event) {
         event.data.forEach(function(rect) {
           window.plot(rect.x, rect.y, rect.width, rect.height, rect.color);
+          crop(rect.x,rect.y,rect.width,rect.height);
         });
       });
 
