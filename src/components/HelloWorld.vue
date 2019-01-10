@@ -38,7 +38,7 @@ function crop(x, y, width, height){
           let canvas = document.createElement('canvas');
           let context = canvas.getContext('2d');
           let img = document.getElementById('postit');
-          context.drawImage(img, 0, 0 );
+          context.drawImage(img, 0, 0, );
           let theData = context.getImageData(x, y, width, height);
           document.getElementById("result").appendChild(imagedata_to_image(theData));
     }
@@ -79,6 +79,7 @@ export default {
 
       tracking.track('#postit', tracker);
       
+      //draw a square on the image (useless but looks good)
       window.plot = function(x, y, w, h, color) {
         var rect = document.createElement('div');
         document.querySelector('.container').appendChild(rect);
