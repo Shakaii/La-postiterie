@@ -47,7 +47,9 @@ function crop(x, y, width, height){
   let canvas = document.createElement('canvas');
   let context = canvas.getContext('2d');
   let img = document.getElementById('preview');
-  context.drawImage(img, 0, 0, );
+  canvas.width = img.width;
+  canvas.height = img.height;
+  context.drawImage(img, 0, 0);
   return context.getImageData(x, y, width, height);
 }
 
