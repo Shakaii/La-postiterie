@@ -1,16 +1,13 @@
 <template>
-  <div class="hello">
+  <div>
     <h1>{{ msg }}</h1>
-    <p>
-      Bienvenue sur la postiterie !
-    </p>
-    <input type="file" @change="previewImage($event.target.name, $event.target.files)" id="avatar" name="avatar" accept="image/png, image/jpeg">
+    <input type="file" @change="previewImage($event.target.name, $event.target.files)" accept="image/png, image/jpeg">
     <div class="frame">
       <div class="container">
-        <img id="postit" :src="image" alt="avatar">
+        <img id="preview" :src="image" alt="">
       </div>
     </div>
-    <button @click="traite">Traiter</button>
+    <button @click="tracking">Traiter</button>
     <div id="result"></div>
   </div>
   
@@ -34,7 +31,6 @@ function imageDataToImage(imagedata) {
     canvas.width = imagedata.width;
     canvas.height = imagedata.height;
     ctx.putImageData(imagedata, 0, 0);
-
     let image = new Image();
     image.src = canvas.toDataURL();
     return image;
@@ -50,14 +46,14 @@ function imageDataToImage(imagedata) {
 function crop(x, y, width, height){
   let canvas = document.createElement('canvas');
   let context = canvas.getContext('2d');
-  let img = document.getElementById('postit');
+  let img = document.getElementById('preview');
   context.drawImage(img, 0, 0, );
   return context.getImageData(x, y, width, height);
 }
 
 
 export default {
-  name: 'HelloWorld',
+  name: 'Postiterie',
   props: {
     msg: String,
   },
@@ -67,7 +63,18 @@ export default {
     }
   },
   methods: {
+
+
+
     onFileSelected(event) {console.log(event)},
+
+
+    /*
+      FUNCTION previewImage
+      preview the uploaded image
+      IN : fieldName : the fieldName ;)
+           file : the image
+    */
     previewImage: function(fieldName, file) {
             let imageFile = file[0] 
             let formData = new FormData()
@@ -75,11 +82,18 @@ export default {
             formData.append(fieldName, imageFile)
             this.image=imageURL;
         },
-    traite: function () {
-      var img = document.getElementById('postit');
+
+
+
+    /*
+      FUNCTION tracking
+      Track post-its and draw a square around them
+    */
+    tracking: function () {
+      let img = document.getElementById('preview');
       var demoContainer = document.querySelector('.container');
 
-      var tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
+      let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
 
       tracker.on('track', function(event) {
         event.data.forEach(function(rect) {
@@ -90,7 +104,7 @@ export default {
         });
       });
 
-      tracking.track('#postit', tracker);
+      tracking.track('#preview', tracker);
       
       //draw a square on the image (useless but looks good)
       window.plot = function(x, y, w, h, color) {
