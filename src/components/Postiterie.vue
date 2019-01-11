@@ -1,20 +1,30 @@
 <template>
   <div>
-    <h1>{{ msg }}</h1>
-    <input type="file" @change="previewImage($event.target.name, $event.target.files)" accept="image/png, image/jpeg">
+    <div class="control">
+      <label  for="file" class="label-input"><span class="button">Choisir une image</span></label>
+      <input id="file" type="file" class="button-input" @change="previewImage($event.target.name, $event.target.files)" accept="image/png, image/jpeg">
+      <span id="startTracking"  class="button" v-bind:class="{faded: isNoImage}" @click="tracking">Traiter</span><br>
+    </div>
     <div class="frame">
       <div class="container">
         <img id="preview" :src="image" alt="">
       </div>
     </div>
-    <button @click="tracking">Traiter</button>
-    <div id="result"></div>
+    <div id="result-hr" v-bind:class="{hidden: isNoResult}">
+      <div class="hr">
+        <span class="hr-img">.</span>
+        <span>Résultat</span>
+        <span class="hr-img">.</span>
+      </div>
+    </div>
+    <div id="result">
+        <li v-for="image in results">
+          <img v-bind:src='image.currentSrc' >
+        </li>
+    </div>
   </div>
-  
 </template>
 <script src="../src/tracking.js"></script>
-
-
 
 
 <script>
@@ -53,48 +63,42 @@ function crop(x, y, width, height){
   return context.getImageData(x, y, width, height);
 }
 
-
 export default {
   name: 'Postiterie',
-  props: {
-    msg: String,
-  },
   data () {
     return {
-      image: null
+      image: null,
+      isNoImage: true,
+      isNoResult: true,
+      results: []
     }
   },
   methods: {
 
-
-
-    onFileSelected(event) {console.log(event)},
-
-
     /*
       FUNCTION previewImage
-      preview the uploaded image
+      preview the uploaded image (and activate the button to track)
       IN : fieldName : the fieldName ;)
            file : the image
     */
     previewImage: function(fieldName, file) {
+            this.isNoImage = false;
             let imageFile = file[0] 
             let formData = new FormData()
             let imageURL = URL.createObjectURL(imageFile)
             formData.append(fieldName, imageFile)
             this.image=imageURL;
-        },
-
-
+    },
 
     /*
       FUNCTION tracking
       Track post-its and draw a square around them
     */
     tracking: function () {
+      
+      let $this = this;
       let img = document.getElementById('preview');
-      var demoContainer = document.querySelector('.container');
-
+      let demoContainer = document.querySelector('.container');
       let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
 
       tracker.on('track', function(event) {
@@ -102,9 +106,11 @@ export default {
           window.plot(rect.x, rect.y, rect.width, rect.height, rect.color);
           let croppedImageData = crop(rect.x,rect.y,rect.width,rect.height);
           let croppedImage = imageDataToImage(croppedImageData);
-          document.getElementById("result").appendChild(croppedImage);
+          $this.results.push(croppedImage);
         });
       });
+
+      this.isNoResult = false;
 
       tracking.track('#preview', tracker);
       
@@ -124,28 +130,74 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style >
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 
+<style>
 .rect {
     width: 80px;
     height: 80px;
     position: absolute;
     left: -1000px;
     top: -1000px;
-  }
+}
+</style>
+
+<style scoped>
+
+.faded {
+    opacity: 0.5;
+}
+
+.hidden {
+    display: none;
+}
+
+.control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-input {
+    display: none;
+}
+
+.button {
+    margin: 1em;
+    background-image: url("../assets/nav.jpg");
+    cursor: pointer;
+    background-color: #7a9cd3;
+    border: none;
+    color: white;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1em;
+    border-style: outset;
+    border-color: #879ec4;
+    color: black;
+    box-sizing: border-box;
+}
+
+.button:active {
+    border-color: #879ec4;
+    border-style: inset;
+}
+
+.hr {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin: 2em;
+}
+
+.hr-img {
+    border-radius: 1em;
+    background-image: url("../assets/nav.jpg");
+    width: 40%;
+    height: 100%;
+    color: rgba(0, 0, 0, 0)
+}
 </style>
