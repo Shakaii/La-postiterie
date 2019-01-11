@@ -107,8 +107,6 @@ export default {
           let croppedImageData = crop(rect.x,rect.y,rect.width,rect.height);
           let croppedImage = imageDataToImage(croppedImageData);
           $this.results.push(croppedImage);
-          console.log(croppedImage);
-          console.log($this.results);
         });
       });
 
