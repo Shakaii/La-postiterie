@@ -22,7 +22,6 @@ export default {
 }
 </script>
 
-
 <style>
 
 body {
@@ -61,13 +60,10 @@ button,
 }
 </style>
 
-
 <style scoped>
 .logo {
     height: 100%;
 }
-
-
 
 .header {
     background-image: url("./assets/nav.jpg");

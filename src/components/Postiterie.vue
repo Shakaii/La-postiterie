@@ -26,7 +26,6 @@
 </template>
 <script src="../src/tracking.js"></script>
 
-
 <script>
 
 /* 
