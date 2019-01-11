@@ -25,65 +25,71 @@ export default {
 
 <style>
 
-@font-face {
-  font-family: "Coiny";
-  src: url('https://fonts.googleapis.com/css?family=Coiny');
+body {
+    margin: 0;
+    padding: 0;
 }
 
-body{
-  
-  margin: 0;
-  padding: 0;
+@font-face {
+    font-family: "Coiny";
+    src: url('https://fonts.googleapis.com/css?family=Coiny');
 }
 
 #app {
-  font-family: 'Coiny', cursive;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+    font-family: 'Coiny', cursive;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
 }
 
-input, button, .form-submit-button{
-  font-family: 'Coiny', cursive;
+input,
+button,
+.form-submit-button {
+    font-family: 'Coiny', cursive;
 }
 
-.slogan{
-  font-style:italic;
-  color: #595959;
+.slogan {
+    font-style: italic;
+    color: #595959;
 }
 
-.header{
-  background-image: url("./assets/nav.jpg");
-  height: 5em;
-  display:flex;
-  justify-content: space-evenly;
-  align-items:center;
+.link {
+    text-decoration: none;
+    font-weight: 900;
+    color: #1b6ab5;
+}
+</style>
+
+
+<style scoped>
+.logo {
+    height: 100%;
 }
 
-.logo{
-  height: 100%;
+
+
+.header {
+    background-image: url("./assets/nav.jpg");
+    height: 5em;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
-.link{
-  text-decoration:none;
-  font-weight: 900;
-  
-  color: #1b6ab5;
+body {
+    background-image: url("./assets/texture.jpg");
 }
 
-.link:hover{
-  color: #2080db;
-}
-
-body{
-  background-image: url("./assets/texture.jpg");
+.link:hover {
+    color: #2080db;
 }
 
 @media only screen and (max-width: 800px) {
-  .slogan, .link{
-    display:none;
-  }
+    .slogan,
+    .link {
+        display: none;
+    }
 }
 
 </style>
