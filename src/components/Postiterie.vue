@@ -25,6 +25,12 @@
   </div>
 </template>
 <script src="../src/tracking.js"></script>
+<!-- <script src="drive.js"></script>
+<script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script> -->
+
 
 <script>
 
