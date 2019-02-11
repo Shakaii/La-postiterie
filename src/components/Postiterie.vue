@@ -7,7 +7,6 @@
     </div>
 
     <div class="small-button-container">
-      <span>OU</span> 
       <label for="file" class="button button-green">Importer une photo <i class="material-icons">photo_library</i></label>
       <input style="display:none" id="file" type="file" @change="getImage($event.target.name, $event.target.files)" accept="image/png, image/jpeg">
     </div>
@@ -332,9 +331,8 @@ export default {
   }
 
   .small-button-container .button{
-      width: 60%;
+      width: 80%;
   }
-
 
   i{
       vertical-align: middle;
@@ -348,22 +346,21 @@ export default {
   }
 
   .button-orange{
-      background-color: #FF6B81;
+      background-color: #478BF9;
   }
 
   .button-container:active .button-orange{
-      background-color: #FF992A;
-      box-shadow: 4px 4px 5px #FF992A;
+      box-shadow: 4px 4px 5px #478BF9;
   }
 
   .button-green{
-      background-color: #6ED2D0;
+      background-color: #db99d8;
   }
 
 
   .small-button-container:active .button-green{
-      background-color: #6DDA6D;
-      box-shadow: 4px 4px 5px #6DDA6D;
+      background-color: #FF992A;
+      box-shadow: 4px 4px 5px #FF992A;
   }
 
   .upload-container .input{
@@ -402,12 +399,16 @@ export default {
       padding: 1em;
       cursor: pointer;
       border-style: none;
-      border-radius: 10px;
+      border-radius: 4px;
       font-weight: 900;
       transition: 0.3s;
       box-shadow: 5px 5px 5px #656565;
       color: black;
       text-decoration: none;
+  }
+
+  .button-green{
+    padding: 0.3em;
   }
 
   .upload{

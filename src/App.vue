@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header>
-    <img src="./assets/header.png">
+      <img alt="header" src="./assets/header.png">
     </header>
     <Postiterie/>
   </div>
@@ -20,23 +20,23 @@ export default {
 </script>
 
 <style>
+@font-face {
+    font-family: 'Fira Sans', sans-serif;
+    src: url("https://fonts.googleapis.com/css?family=Fira+Sans:100,400,900");
+}
+
 #app {
-    font-family: 'Coiny', cursive;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Fira Sans', sans-serif;
 }
 
 body {
     margin: 0;
     padding: 0;
-    background-color: #efefde;
+    background-color: rgba(0,0,0,0.01);
 }
 
 
-@font-face {
-    font-family: "Coiny";
-    src: url('https://fonts.googleapis.com/css?family=Coiny');
-}
+
 </style>
 
 <style scoped>
