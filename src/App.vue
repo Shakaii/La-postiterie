@@ -1,11 +1,8 @@
 <template>
   <div id="app">
-    <div class="header">
-      <img class="logo" src="./assets/logo.png" alt="logo">
-      <span>Bienvenue sur la postiterie</span>
-      <span class="slogan">"Gagner du temps, c'est notre slogan"</span>
-      <a class="link" target="_blank" href="http://postiterie.wordpress.com">En savoir plus</a>
-    </div>
+    <header>
+    <img src="./assets/header.png">
+    </header>
     <Postiterie/>
   </div>
 </template>
@@ -23,69 +20,37 @@ export default {
 </script>
 
 <style>
+#app {
+    font-family: 'Coiny', cursive;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
 body {
     margin: 0;
     padding: 0;
+    background-color: #efefde;
 }
+
 
 @font-face {
     font-family: "Coiny";
     src: url('https://fonts.googleapis.com/css?family=Coiny');
 }
-
-#app {
-    font-family: 'Coiny', cursive;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-}
-
-input,
-button,
-.form-submit-button {
-    font-family: 'Coiny', cursive;
-}
-
-.slogan {
-    font-style: italic;
-    color: #595959;
-}
-
-.link {
-    text-decoration: none;
-    font-weight: 900;
-    color: #1b6ab5;
-}
 </style>
 
 <style scoped>
-.logo {
-    height: 100%;
+header{
+    text-align: center;
 }
 
-.header {
-    background-image: url("./assets/nav.jpg");
-    height: 5em;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
+header img{
+    width: calc(100% - 2em);
+    height: auto;
+    margin: 1em;
+    margin-bottom: -3em;
+    max-width: 300px;
 }
 
-body {
-    background-image: url("./assets/texture.jpg");
-}
-
-.link:hover {
-    color: #2080db;
-}
-
-@media only screen and (max-width: 800px) {
-    .slogan,
-    .link {
-        display: none;
-    }
-}
 
 </style>
