@@ -10,6 +10,7 @@
 <script>
 import Postiterie from './components/Postiterie.vue'
 import tracking from 'tracking'
+import gapi from './gapi.js'
 
 export default {
   name: 'app',
