@@ -11,7 +11,7 @@
       <input style="display:none" id="file" type="file" @change="getImage($event.target.name, $event.target.files)" accept="image/png, image/jpeg">
     </div>
 
-    <div class="upload-container" v-if="authorized && image && !link">
+    <div class="upload-container" v-if="image && !link">
       <div class="input">
         <input placeholder="nom du fichier" type="text" v-model="fileName">
       </div>
@@ -20,12 +20,8 @@
       </div>             
     </div> 
 
-    <div class="info" v-else-if="authorized && !link">
-      Vous êtes authentifié à google drive !<br> Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
-    </div>
-
-    <div class="upload-container" v-else-if="!link">
-        <button id="authorize_button" class="button button-orange">S'authentifier</button>        
+    <div class="info" v-else-if="!link">
+      Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
     </div>
 
     <div class="button-container" v-if="link">
@@ -133,14 +129,19 @@ export default {
           let croppedImageData = $this.crop(rect.x,rect.y,rect.width,rect.height);
           let croppedImage = $this.imageDataToImage(croppedImageData);
           $this.results.push(croppedImage);
-          console.log("+1");
 
         });
 
         setTimeout(function(){
           if ($this.results.length){
-            $this.sendFile();
-          }
+            if ($this.authorized){
+              $this.sendFile();
+            }else{
+              Promise.resolve( gapi.auth2.getAuthInstance().signIn())
+              .then(() => { $this.sendFile(); });
+              }
+            }
+          
           else $this.trackingFinishedWithNoResult = true;
 
         },3000);
@@ -167,7 +168,7 @@ export default {
 
     //On load, called to load the auth2 library and API client library.
     handleClientLoad: function() {
-      gapi.load('client:auth2', this.initClient);
+      return gapi.load('client:auth2', this.initClient);
     },
 
     
@@ -188,7 +189,6 @@ export default {
 
         // Handle the initial sign-in state.
         $this.updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-        authorizeButton.onclick = $this.handleAuthClick;
       }, function(error) {
         console.log(JSON.stringify(error, null, 2));
       });
@@ -197,15 +197,11 @@ export default {
     // Called when the signed in status changes, to update the UI
     //  appropriately. After a sign-in, the API is called.
     updateSigninStatus: function(isSignedIn) {
-      if (isSignedIn) {
-        this.authorized = true;
-      } else {
-        this.authorized = false;
-      }
+        this.authorized = isSignedIn;
     }, 
 
     // Sign in the user upon button click.
-    handleAuthClick: function(event) {
+    handleAuth: function() {
       gapi.auth2.getAuthInstance().signIn();
     },
 
@@ -313,6 +309,7 @@ export default {
   i{
       color:rgba(0,0,0,0.5);
       font-size: 2em!important;
+      vertical-align: middle;
   }
 
   .button-top{
@@ -332,10 +329,6 @@ export default {
 
   .small-button-container .button{
       width: 80%;
-  }
-
-  i{
-      vertical-align: middle;
   }
 
   .container{

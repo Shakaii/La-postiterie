@@ -35,8 +35,6 @@ body {
     background-color: rgba(0,0,0,0.01);
 }
 
-
-
 </style>
 
 <style scoped>
