@@ -50,10 +50,6 @@ export default {
       trackingFinished: false,
       trackingFinishedWithNoResult: false,
       fileName: "",
-      CLIENT_ID: '222333408772-7babrj6q1uronhdntc2a5fj6lv6m5cff.apps.googleusercontent.com',
-      API_KEY: 'AIzaSyCp7-1ieE8KGorrOce7toVfdBriDXss-sM',
-      DISCOVERY_DOCS: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-      SCOPES: 'https://www.googleapis.com/auth/drive',
       link: null
     }
   },
@@ -125,18 +121,19 @@ export default {
 
       tracker.on('track', function(event) {
 
-        let resultCount = 0;
-        let resultLength = event.data.length;
+        let images = event.data;
+        const croppedImagePromises = images.map((image)=>{
+          return new Promise(function(resolve){
+            let croppedImageData = $this.crop(image.x,image.y,image.width,image.height);
+            let croppedImage = $this.imageDataToImage(croppedImageData);
+            $this.results.push(croppedImage);
+            resolve();
+          });
+        });
 
-        event.data.forEach(function(rect) {
-          let croppedImageData = $this.crop(rect.x,rect.y,rect.width,rect.height);
-          let croppedImage = $this.imageDataToImage(croppedImageData);
-          $this.results.push(croppedImage);
-          resultCount ++
-
-          //once all the results have been processed : connects and send file
-          if (resultCount == resultLength){
-            if ($this.results.length){
+        Promise.all(croppedImagePromises).then(()=>{
+          console.log($this.results);
+          if ($this.results.length){
               if ($this.authorized){
                 $this.sendFile();
               }
@@ -148,13 +145,7 @@ export default {
             else{ 
               $this.trackingFinishedWithNoResult = true;
             }
-          }
         });
-
-
-          
-
-
       });
 
       tracking.track('#preview', tracker);
@@ -186,12 +177,13 @@ export default {
 
       authorizeButton = document.getElementById('authorize_button');
       let $this = this;
+      console.log(process.env)
 
       gapi.client.init({
-        apiKey: this.API_KEY,
-        clientId: this.CLIENT_ID,
-        discoveryDocs: this.DISCOVERY_DOCS,
-        scope: this.SCOPES
+        apiKey: process.env.VUE_APP_API_KEY,
+        clientId: process.env.VUE_APP_CLIENT_ID,
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+        scope: 'https://www.googleapis.com/auth/drive'
       }).then(function () {
         // Listen for sign-in state changes.
         gapi.auth2.getAuthInstance().isSignedIn.listen($this.updateSigninStatus);
