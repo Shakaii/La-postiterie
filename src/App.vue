@@ -11,6 +11,7 @@
 import Postiterie from './components/Postiterie.vue'
 import tracking from 'tracking'
 import gapi from './gapi.js'
+import materialIcons from 'material-icons'
 
 export default {
   name: 'app',
