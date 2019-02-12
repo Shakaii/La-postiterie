@@ -1,26 +1,12 @@
 <template>
 
   <div class="container">
-    <div class="button-container">
-      <div class=" button-top button-orange"><i class="material-icons">photo_camera</i></div>
-      <span class="button button-orange">Prendre une photo</span>
-    </div>
 
-    <div class="small-button-container">
-      <label for="file" class="button button-green">Importer une photo <i class="material-icons">photo_library</i></label>
-      <input style="display:none" id="file" type="file" @change="getImage($event.target.name, $event.target.files)" accept="image/png, image/jpeg">
-    </div>
+    <TakePhoto></TakePhoto>
+    <ImportPhoto></ImportPhoto> 
+    <UploadPhoto v-if="image && !link"></UploadPhoto>
 
-    <div class="upload-container" v-if="image && !link">
-      <div class="input">
-        <input placeholder="nom du fichier" type="text" v-model="fileName">
-      </div>
-      <div class="round-button_container" >
-        <button @click="tracking" class="upload button"><i class="material-icons">cloud_upload</i></button>
-      </div>             
-    </div> 
-
-    <div class="info" v-else-if="!link">
+    <div class="info" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
     </div>
 
@@ -39,18 +25,25 @@
 
   var authorizeButton;
 
+import TakePhoto from './TakePhoto.vue'
+import ImportPhoto from './ImportPhoto.vue'
+import UploadPhoto from './UploadPhoto.vue'
+
 export default {
 
   name: 'Postiterie',
+  components: {
+    TakePhoto,
+    ImportPhoto,
+    UploadPhoto
+  },
   data () {
     return {
       image: null,
       results: [],
       authorized: false,
-      trackingFinished: false,
-      trackingFinishedWithNoResult: false,
-      fileName: "",
-      link: null
+      link: null,
+      fileName: ""
     }
   },
   methods: {
@@ -113,8 +106,6 @@ export default {
     tracking: function () {
       
       let $this = this;
-      $this.trackingFinished = false;
-      $this.trackingFinishedWithNoResult = false;
       $this.results = [];
 
       let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
@@ -141,9 +132,6 @@ export default {
                 Promise.resolve( gapi.auth2.getAuthInstance().signIn())
                 .then(() => { $this.sendFile(); });
               }
-            }
-            else{ 
-              $this.trackingFinishedWithNoResult = true;
             }
         });
       });
@@ -255,119 +243,7 @@ export default {
 }
 </script>
 
-<style scoped>
-  span{
-      font-weight: 100;
-      width: 20%;
-      text-align: center;
-  }
-
-  .button-container{
-      width: 100%;
-      margin-top: 1em;
-      display: flex;
-      flex-direction: column;
-      align-items:center;
-      -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-      -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-          -ms-user-select: none; /* Internet Explorer/Edge */
-              user-select: none; /* Non-prefixed version, currently*/
-  }
-
-  .small-button-container{
-      width: 100%;
-      margin-top: 1em;
-      display: flex;
-      flex-direction: row;
-      align-items:center;
-      justify-content:center;
-      -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-      -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-          -ms-user-select: none; /* Internet Explorer/Edge */
-              user-select: none; /* Non-prefixed version, currently*/
-  }
-
-  .small-button-container .button{
-      vertical-align: middle;
-  }
-
-  i{
-      color:rgba(0,0,0,0.5);
-      font-size: 2em!important;
-      vertical-align: middle;
-  }
-
-  .button-top{
-      padding: 1em;
-      padding-top: 0.7em;
-      border-top-left-radius: 50px;
-      border-top-right-radius: 50px;
-      padding-bottom: 0;
-      transition: 0.3s;
-      cursor: pointer;
-      box-shadow: 5px 5px 5px #656565;
-  }
-
-  .button-container .button{
-      width: 80%;
-  }
-
-  .small-button-container .button{
-      width: 80%;
-  }
-
-  .container{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-evenly;
-  }
-
-  .button-orange{
-      background-color: #478BF9;
-  }
-
-  .button-container:active .button-orange{
-      box-shadow: 4px 4px 5px #478BF9;
-  }
-
-  .small-button-container:active .button-green{
-      background-color: #6ED2D0;
-      box-shadow: 4px 4px 5px #6ED2D0;
-  }
-
-  .upload-container .input{
-      width: calc(60% - 1em);
-      margin-right: 1em;
-      box-sizing: border-box;
-  }
-
-  .upload-container .input input{
-      background-color: rgba(0,0,0,0);
-      border-style:none;
-      border-bottom-style:solid;
-      border-bottom-color: black;
-      width: 100%;
-  }
-
-  .upload-container .input input::placeholder{
-      font-weight: 100;
-      text-transform: uppercase
-  }
-
-  .round-button-container{
-      width: 20%;
-      text-align: center;
-  }
-
-  .upload:active{
-      background-color: #F8CDE0;
-      box-shadow: 4px 4px 5px #F8CDE0;
-  }
+<style>
 
   .button{
       box-sizing: border-box;
@@ -384,52 +260,46 @@ export default {
       text-decoration: none;
   }
 
-  .upload{
-      background-color: #FF6B81;
-      box-sizing: border-box;
-      text-align: center;
+  i{
+      color:rgba(0,0,0,0.5);
+      font-size: 2em!important;
       vertical-align: middle;
-      padding: 1em;
-      cursor: pointer;
-      border-style: none;
-      border-radius: 20px;
-      font-weight: 900;
-      transition: 0.3s;
-      box-shadow: 5px 5px 5px #656565;
   }
 
-  .upload-container{
+  .button-orange{
+      background-color: #478BF9;
+  }
+
+  .button-container:active .button-orange{
+      box-shadow: 4px 4px 5px #478BF9;
+  }
+
+  .button-container .button{
+      width: 80%;
+  }
+
+  .button-container{
       width: 100%;
       margin-top: 1em;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items:center;
-      justify-content:center;
-      -webkit-touch-callout: none; /* iOS Safari */   
-      -webkit-user-select: none; /* Safari */
-      -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-          -ms-user-select: none; /* Internet Explorer/Edge */
-              user-select: none; /* Non-prefixed version, currently*/
+      user-select: none; 
+  }
+
+</style>
+
+<style scoped>
+
+  .container{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
   }
 
   .info{
     margin-top: 1em;
-    text-align:center;
-  }
-
-  .open-link{
-    margin-top: 1em;
-  }
-
-  .margin-top{
-    margin-top: 1em;
-  }
-
-    .button-green{
-      background-color: #6ED2D0;
-      padding: 0.3em;
-      color: rgba(0,0,0,0.6);
   }
 
 </style>
