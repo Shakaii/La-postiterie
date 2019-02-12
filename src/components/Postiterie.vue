@@ -2,9 +2,9 @@
 
   <div class="container">
 
-    <TakePhoto></TakePhoto>
-    <ImportPhoto></ImportPhoto> 
-    <UploadPhoto v-if="image && !link"></UploadPhoto>
+    <TakePhoto/>
+    <ImportPhoto/>
+    <UploadPhoto v-if="image && !link"/>
 
     <div class="info" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
@@ -300,6 +300,7 @@ export default {
 
   .info{
     margin-top: 1em;
+    text-align:center;
   }
 
 </style>

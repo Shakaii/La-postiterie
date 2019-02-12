@@ -1,14 +1,13 @@
 <template>
   <div id="app">
-    <header>
-      <img alt="header" src="./assets/header.png">
-    </header>
+    <Header/>
     <Postiterie/>
   </div>
 </template>
 
 <script>
 import Postiterie from './components/Postiterie.vue'
+import Header from './components/Header.vue'
 import tracking from 'tracking'
 import gapi from './gapi.js'
 import materialIcons from 'material-icons'
@@ -16,7 +15,8 @@ import materialIcons from 'material-icons'
 export default {
   name: 'app',
   components: {
-    Postiterie
+    Postiterie,
+    Header
   }
 }
 </script>
@@ -34,23 +34,8 @@ export default {
 body {
     margin: 0;
     padding: 0;
-    background-color: rgba(0,0,0,0.01);
+    background-color: rgba(0,0,0,0.05);
 }
 
 </style>
 
-<style scoped>
-header{
-    text-align: center;
-}
-
-header img{
-    width: calc(100% - 2em);
-    height: auto;
-    margin: 1em;
-    margin-bottom: -3em;
-    max-width: 300px;
-}
-
-
-</style>
