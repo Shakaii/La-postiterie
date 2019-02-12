@@ -119,32 +119,41 @@ export default {
       let $this = this;
       $this.trackingFinished = false;
       $this.trackingFinishedWithNoResult = false;
+      $this.results = [];
 
       let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
 
       tracker.on('track', function(event) {
-        
+
+        let resultCount = 0;
+        let resultLength = event.data.length;
+
         event.data.forEach(function(rect) {
-          
           let croppedImageData = $this.crop(rect.x,rect.y,rect.width,rect.height);
           let croppedImage = $this.imageDataToImage(croppedImageData);
           $this.results.push(croppedImage);
+          resultCount ++
 
-        });
-
-        setTimeout(function(){
-          if ($this.results.length){
-            if ($this.authorized){
-              $this.sendFile();
-            }else{
-              Promise.resolve( gapi.auth2.getAuthInstance().signIn())
-              .then(() => { $this.sendFile(); });
+          //once all the results have been processed : connects and send file
+          if (resultCount == resultLength){
+            if ($this.results.length){
+              if ($this.authorized){
+                $this.sendFile();
+              }
+              else{
+                Promise.resolve( gapi.auth2.getAuthInstance().signIn())
+                .then(() => { $this.sendFile(); });
               }
             }
-          
-          else $this.trackingFinishedWithNoResult = true;
+            else{ 
+              $this.trackingFinishedWithNoResult = true;
+            }
+          }
+        });
 
-        },3000);
+
+          
+
 
       });
 
