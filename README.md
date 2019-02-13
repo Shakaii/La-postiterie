@@ -6,8 +6,7 @@
 
 [More details on our website (french only)](https://postiterie.wordpress.com/)
 
-### This is what it looks like
-![Image of la postiterie](http://portfolio.debaser.fr/icons/postiterie1.jpg)
+![La postiterie](http://debaser.fr/La_Postiterie.png)
 
 ### 
 
