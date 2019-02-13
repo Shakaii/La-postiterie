@@ -1,95 +1,67 @@
 <template>
   <div id="app">
-    <div class="header">
-      <img class="logo" src="./assets/logo.png" alt="logo">
-      <span>Bienvenue sur la postiterie</span>
-      <span class="slogan">"Gagner du temps, c'est notre slogan"</span>
-      <a class="link" target="_blank" href="http://postiterie.wordpress.com">En savoir plus</a>
-    </div>
+    <Header/>
     <Postiterie/>
   </div>
 </template>
 
 <script>
 import Postiterie from './components/Postiterie.vue'
+import Header from './components/Header.vue'
 import tracking from 'tracking'
+import gapi from './gapi.js'
+import materialIcons from 'material-icons'
 
 export default {
   name: 'app',
   components: {
-    Postiterie
+    Postiterie,
+    Header
   }
 }
 </script>
 
-
 <style>
+
+:root{
+  --body-background: rgba(0,0,0,0.05); 
+
+  --header-background: #478BF9;
+  --header-color: rgba(0,0,0,0.6);
+
+  --big-button-background : #478BF9;
+  --big-button-color : rgba(0,0,0,0.7);
+  --big-button-icon : rgba(0,0,0,0.55);
+  --big-button-shadow : #656565;
+  --big-button-active-shadow : #478BF9;
+  
+  --small-button-background : #6ED2D0;
+  --small-button-color : rgba(0,0,0,0.7);
+  --small-button-icon : rgba(0,0,0,0.55);
+  --small-button-shadow : #656565;
+  --small-button-active-shadow : #6ED2D0;
+
+  --round-button-background : #FF6B81;
+  --round-button-color : rgba(0,0,0,0.7);
+  --round-button-icon : rgba(0,0,0,0.55);
+  --round-button-shadow : #656565;
+  --round-button-active-shadow : #FF6B81;
+}
+
+@font-face {
+    font-family: 'Fira Sans', sans-serif;
+    src: url("https://fonts.googleapis.com/css?family=Fira+Sans:100,400,900");
+}
+
+#app {
+    font-family: 'Fira Sans', sans-serif;
+}
 
 body {
     margin: 0;
     padding: 0;
-}
-
-@font-face {
-    font-family: "Coiny";
-    src: url('https://fonts.googleapis.com/css?family=Coiny');
-}
-
-#app {
-    font-family: 'Coiny', cursive;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-}
-
-input,
-button,
-.form-submit-button {
-    font-family: 'Coiny', cursive;
-}
-
-.slogan {
-    font-style: italic;
-    color: #595959;
-}
-
-.link {
-    text-decoration: none;
-    font-weight: 900;
-    color: #1b6ab5;
-}
-</style>
-
-
-<style scoped>
-.logo {
-    height: 100%;
-}
-
-
-
-.header {
-    background-image: url("./assets/nav.jpg");
-    height: 5em;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
-body {
-    background-image: url("./assets/texture.jpg");
-}
-
-.link:hover {
-    color: #2080db;
-}
-
-@media only screen and (max-width: 800px) {
-    .slogan,
-    .link {
-        display: none;
-    }
+    background-color: var(--body-background);
 }
 
 </style>
+
