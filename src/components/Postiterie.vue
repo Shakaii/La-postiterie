@@ -3,8 +3,8 @@
   <div class="container">
 
     <TakePhoto/>
-    <ImportPhoto/>
-    <UploadPhoto v-if="image && !link"/>
+    <ImportPhoto  @fileupload="getImage" />
+    <UploadPhoto @uploadClick="tracking" @inputChange="updateFileName" v-if="image && !link"/>
 
     <div class="info" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
@@ -47,6 +47,13 @@ export default {
     }
   },
   methods: {
+
+    //  updateFileName
+    //  update the filename when the value from UploadPhoto's component is updated
+    //
+    updateFileName: function(newFileName){
+      this.fileName = newFileName;
+    },
 
     /* 
       FUNCTION imageDataToImage
@@ -123,16 +130,15 @@ export default {
         });
 
         Promise.all(croppedImagePromises).then(()=>{
-          console.log($this.results);
           if ($this.results.length){
-              if ($this.authorized){
-                $this.sendFile();
-              }
-              else{
-                Promise.resolve( gapi.auth2.getAuthInstance().signIn())
-                .then(() => { $this.sendFile(); });
-              }
+            if ($this.authorized){
+              $this.sendFile();
             }
+            else{
+              Promise.resolve( gapi.auth2.getAuthInstance().signIn())
+              .then(() => { $this.sendFile(); });
+            }
+          }
         });
       });
 
@@ -165,7 +171,6 @@ export default {
 
       authorizeButton = document.getElementById('authorize_button');
       let $this = this;
-      console.log(process.env)
 
       gapi.client.init({
         apiKey: process.env.VUE_APP_API_KEY,
@@ -179,7 +184,7 @@ export default {
         // Handle the initial sign-in state.
         $this.updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
       }, function(error) {
-        console.log(JSON.stringify(error, null, 2));
+        console.error(JSON.stringify(error, null, 2));
       });
     },
 
@@ -202,7 +207,6 @@ export default {
 
     sendFile: function(){
       let $this = this;
-      console.log("sending File");
       let fileContent = '<?xml version="1.0" encoding="UTF-8"?><mxGraphModel dx="1190" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0"><root><mxCell id="0" /><mxCell id="1" parent="0" /></root></mxGraphModel>'
       //let fileContent = this.resultToXML()
       let file = new Blob([fileContent], {type: 'text/xml'});

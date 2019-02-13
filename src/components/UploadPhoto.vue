@@ -1,10 +1,10 @@
 <template>
     <div class="upload-container">
       <div class="input">
-        <input placeholder="nom du fichier" type="text" v-model="fileName">
+        <input @change="inputChange" placeholder="nom du fichier" type="text" v-model="fileName">
       </div>
       <div class="round-button-container" >
-        <button @click="tracking" class="round-button button">
+        <button @click="uploadClick" class="round-button button">
             <i class="material-icons">cloud_upload</i>
         </button>
       </div>             
@@ -20,10 +20,12 @@ export default {
         }
     },
     methods: {
-        tracking(){
-            this.$parent.fileName = this.fileName;
-            this.$parent.tracking();
-        }
+        uploadClick(){
+            this.$emit('uploadClick');
+        },
+        inputChange(){
+            this.$emit('inputChange', this.fileName);
+        },
     }
 }
 </script>
