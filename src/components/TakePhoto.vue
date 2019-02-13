@@ -1,7 +1,7 @@
 <template>
-    <div class="button-container">
-        <div class=" button-top button-orange"><i class="material-icons">photo_camera</i></div>
-        <span class="button button-orange">Prendre une photo</span>
+    <div class="big-button-container">
+        <div class=" button-top big-button"><i class="material-icons">photo_camera</i></div>
+        <span class="button big-button">Prendre une photo</span>
     </div>
 </template>
 
@@ -21,10 +21,9 @@ export default {
     padding-bottom: 0;
     transition: 0.3s;
     cursor: pointer;
-    box-shadow: 5px 5px 5px #656565;
+    box-shadow: 5px 5px 5px var(--big-button-shadow);
+    color: var(--big-button-icon);
 }
-
-
 
 
 

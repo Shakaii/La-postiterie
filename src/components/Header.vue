@@ -1,6 +1,6 @@
 <template>
     <header>
-        <img src="../assets/postit.png">La Postiterie
+        <img alt="a postit" src="../assets/postit.png">La Postiterie
     </header>
 </template>
 
@@ -13,18 +13,16 @@ export default {
 <style scoped>
 
 header {
+    background-color: var(--header-background);
+    color: var(--header-color);
     display:flex;
     justify-content: center;
     align-items: center;
     font-size : 1.8em;
     text-align:center;
     font-weight: 900;
-    background-color: #478BF9;
-    padding-right: 12px;
-    padding-left: 0px;
-    padding-top: 4px;
-    padding-bottom: 5px;
-    color: rgba(0,0,0,0.6);
+    padding : 4px 12px 5px 0px;
+    
     
 }
 

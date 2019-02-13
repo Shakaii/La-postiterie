@@ -1,6 +1,6 @@
 <template>
     <div class="small-button-container">
-      <label for="file" class="button button-green">Importer une photo <i class="material-icons">photo_library</i></label>
+      <label for="file" class="button small-button">Importer une photo <i class="material-icons">photo_library</i></label>
       <input style="display:none" id="file" type="file" @change="getImage($event.target.name, $event.target.files)" accept="image/png, image/jpeg">
     </div>
 </template>
@@ -28,9 +28,8 @@ export default {
     user-select: none; 
 }
 
-.small-button-container:active .button-green{
-    background-color: #6ED2D0;
-    box-shadow: 4px 4px 5px #6ED2D0;
+.small-button-container:active .small-button{
+    box-shadow: 4px 4px 5px var(--small-button-active-shadow);
 }
 
 .small-button-container .button{
@@ -41,10 +40,14 @@ export default {
     vertical-align: middle;
 }
 
-.button-green{
-    background-color: #6ED2D0;
+.small-button{
+    background-color: var(--small-button-background);
+    color: var(--small-button-color);
     padding: 0.3em;
-    color: rgba(0,0,0,0.6);
+}
+
+.small-button i{
+    color: var(--small-button-icon);
 }
 
 

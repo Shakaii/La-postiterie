@@ -10,8 +10,8 @@
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
     </div>
 
-    <div class="button-container" v-if="link">
-      <a class="button button-orange" target="_blank"  v-bind:href="link">Ouvrir le schéma avec drawIO</a> 
+    <div class="big-button-container" v-if="link">
+      <a class="button big-button" target="_blank"  v-bind:href="link">Ouvrir le schéma avec drawIO</a> 
     </div>
     
     <!-- has to be here for tracking-->
@@ -256,29 +256,28 @@ export default {
       font-weight: 900;
       transition: 0.3s;
       box-shadow: 5px 5px 5px #656565;
-      color: rgba(0,0,0,0.6);
       text-decoration: none;
   }
 
   i{
-      color:rgba(0,0,0,0.5);
       font-size: 2em!important;
       vertical-align: middle;
   }
 
-  .button-orange{
-      background-color: #478BF9;
+  .big-button{
+      background-color: var(--big-button-background);
+      color: var(--big-button-color);
   }
 
-  .button-container:active .button-orange{
-      box-shadow: 4px 4px 5px #478BF9;
+  .big-button-container:active .big-button{
+      box-shadow: 4px 4px 5px var(--big-button-active-shadow);
   }
 
-  .button-container .button{
+  .big-button-container .button{
       width: 80%;
   }
 
-  .button-container{
+  .big-button-container{
       width: 100%;
       margin-top: 1em;
       display: flex;

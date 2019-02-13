@@ -4,7 +4,7 @@
         <input placeholder="nom du fichier" type="text" v-model="fileName">
       </div>
       <div class="round-button-container" >
-        <button @click="tracking" class="upload button">
+        <button @click="tracking" class="round-button button">
             <i class="material-icons">cloud_upload</i>
         </button>
       </div>             
@@ -53,13 +53,12 @@ export default {
       text-align: center;
   }
 
-  .upload:active{
-      background-color: #F8CDE0;
-      box-shadow: 4px 4px 5px #F8CDE0;
+  .round-button:active{
+      box-shadow: 4px 4px 5px var(--round-button-active-shadow);
   }
 
-  .upload{
-      background-color: #FF6B81;
+  .round-button{
+      background-color: var(--round-button-background);       
       box-sizing: border-box;
       text-align: center;
       vertical-align: middle;
@@ -69,7 +68,12 @@ export default {
       border-radius: 20px;
       font-weight: 900;
       transition: 0.3s;
-      box-shadow: 5px 5px 5px #656565;
+      box-shadow: 5px 5px 5px var(--round-button-shadow);
+      color: var(--round-button-color);
+  }
+
+  .round-button i{
+      color: var(--round-button-icon);
   }
 
   .upload-container{
