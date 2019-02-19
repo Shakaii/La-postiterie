@@ -16,7 +16,7 @@ In order to use google drive api, you'll require credentials.
 
 To get them you need to go to https://console.cloud.google.com/apis/dashboard and create an app by selecting the Google Drive Api. Then you'll need to select browser app, and specify source and redirect url (this app uses localhost:8080 by default) then you have to create the credentials : an api key and a client which you'll be able to get the id of
 
-then add a file name .env.local in the root folder with these 2 lines (these are fake, use yours) :
+then add a file named .env.local in the root folder with these 2 lines (these are fake, use yours) :
 
 ```
 VUE_APP_API_KEY=AIaDyCp7-1deE8KGorrOce7toVfdBhiDXhs-sM
