@@ -2,9 +2,9 @@
 
   <div class="container">
 
-    <TakePhoto/>
+    <TakePhoto @fileupload="getImage" />
     <ImportPhoto  @fileupload="getImage" />
-    <UploadPhoto @uploadClick="tracking" @inputChange="updateFileName" v-if="image && !link"/>
+    <UploadPhoto @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
 
     <div class="info" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
@@ -43,7 +43,7 @@ export default {
       results: [],
       authorized: false,
       link: null,
-      fileName: ""
+      email: ""
     }
   },
   methods: {
@@ -51,8 +51,8 @@ export default {
     //  updateFileName
     //  update the filename when the value from UploadPhoto's component is updated
     //
-    updateFileName: function(newFileName){
-      this.fileName = newFileName;
+    updateEmail: function(newEmail){
+      this.email = newEmail;
     },
 
     /* 
@@ -207,16 +207,20 @@ export default {
 
     sendFile: function(){
       let $this = this;
+      
       let fileContent = '<?xml version="1.0" encoding="UTF-8"?><mxGraphModel dx="1190" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0"><root><mxCell id="0" /><mxCell id="1" parent="0" /></root></mxGraphModel>'
-      //let fileContent = this.resultToXML()
+      //let fileContent = this.resultToXML()     // uncomment this line  and remove the one above when resultToXml is ready
       let file = new Blob([fileContent], {type: 'text/xml'});
 
-      let fileName ="";
+      let date = new Date()
+      date = date.toLocaleDateString("fr-FR");
 
-      if (this.fileName){
-        fileName = this.fileName
+      //if email is set we can store it in local storage for next time
+      if (this.email){
+        localStorage.setItem('email', this.email);
       }
-      else fileName = "La Postiterie - schéma sans nom"
+
+      let fileName = "Postiterie " + date; 
 
       let metadata = {
           'name': fileName, // Filename at Google Drive

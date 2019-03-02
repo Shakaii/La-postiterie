@@ -1,7 +1,7 @@
 <template>
     <div class="upload-container">
       <div class="input">
-        <input @change="inputChange" placeholder="nom du fichier" type="text" v-model="fileName">
+        <input @change="inputChange" placeholder="email" type="text" v-model="email">
       </div>
       <div class="round-button-container" >
         <button @click="uploadClick" class="round-button button">
@@ -16,7 +16,7 @@ export default {
     name: 'UploadPhoto',
     data () {
         return {
-            fileName: ""
+            email: ""
         }
     },
     methods: {
@@ -24,8 +24,16 @@ export default {
             this.$emit('uploadClick');
         },
         inputChange(){
-            this.$emit('inputChange', this.fileName);
+            this.$emit('inputChange', this.email);
         },
+    },
+    created: function(){
+
+        if (localStorage.getItem('email')){
+            this.email = localStorage.getItem('email');
+            this.inputChange();
+        }
+      
     }
 }
 </script>
