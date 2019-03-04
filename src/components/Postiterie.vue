@@ -43,7 +43,8 @@ export default {
       results: [],
       authorized: false,
       link: null,
-      fileName: ""
+      fileName: "",
+      pos:[]
     }
   },
   methods: {
@@ -104,6 +105,13 @@ export default {
             this.image=imageURL;
     },
 
+    bufferToBase64:function(buf) {
+    var binstr = Array.prototype.map.call(buf, function (ch) {
+        return String.fromCharCode(ch);
+    }).join('');
+    return btoa(binstr);
+},
+
     /*
       FUNCTION tracking
       Track post-its and add them to results[]
@@ -114,6 +122,8 @@ export default {
       
       let $this = this;
       $this.results = [];
+      $this.temps = []
+      $this.pos = []
 
       let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
 
@@ -123,7 +133,9 @@ export default {
         const croppedImagePromises = images.map((image)=>{
           return new Promise(function(resolve){
             let croppedImageData = $this.crop(image.x,image.y,image.width,image.height);
+            $this.pos.push(new Object({x: image.x, y: image.y, width: image.width, height: image.height}))
             let croppedImage = $this.imageDataToImage(croppedImageData);
+            $this.temps.push(croppedImage.src)
             $this.results.push(croppedImage);
             resolve();
           });
@@ -146,13 +158,20 @@ export default {
     },
 
 
-
     // function resultToXML
     // TODO
     // return the XML from the result array[];
     resultToXML: function(){
-      let xml = "";
-    
+      let $this = this;
+      let xml = '<?xml version="1.0" encoding="UTF-8"?><mxGraphModel dx="1190" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0"><root><mxCell id="0" /><mxCell id="1" parent="0" />';
+      this.temps.forEach(function (el, index) {
+        let base = el.replace(";base64", "");
+        xml+=`<mxCell id="xVlBypw9ISABlRlfdyYR-`+index+`" value="" 
+style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=`+base+`;"
+            vertex="1" parent="1">
+			<mxGeometry x="`+$this.pos[index].x+`" y="`+$this.pos[index].y+`" width="`+$this.pos[index].width+`" height="`+$this.pos[index].height+`" as="geometry" /></mxCell>`
+      })
+      xml+='</root></mxGraphModel>'
       return xml;
     },
 
@@ -207,8 +226,11 @@ export default {
 
     sendFile: function(){
       let $this = this;
-      let fileContent = '<?xml version="1.0" encoding="UTF-8"?><mxGraphModel dx="1190" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0"><root><mxCell id="0" /><mxCell id="1" parent="0" /></root></mxGraphModel>'
+      let fileContent = this.resultToXML()
       //let fileContent = this.resultToXML()
+      $this.results.forEach(function (res) {
+        
+      })
       let file = new Blob([fileContent], {type: 'text/xml'});
 
       let fileName ="";
