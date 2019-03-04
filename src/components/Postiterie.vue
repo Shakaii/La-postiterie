@@ -105,13 +105,6 @@ export default {
             this.image=imageURL;
     },
 
-    bufferToBase64:function(buf) {
-    var binstr = Array.prototype.map.call(buf, function (ch) {
-        return String.fromCharCode(ch);
-    }).join('');
-    return btoa(binstr);
-},
-
     /*
       FUNCTION tracking
       Track post-its and add them to results[]
