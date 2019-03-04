@@ -25,9 +25,9 @@
 
   var authorizeButton;
 
-import TakePhoto from './TakePhoto.vue'
-import ImportPhoto from './ImportPhoto.vue'
-import UploadPhoto from './UploadPhoto.vue'
+import TakePhoto from './TakePhoto.vue';
+import ImportPhoto from './ImportPhoto.vue';
+import UploadPhoto from './UploadPhoto.vue';
 
 export default {
 
@@ -212,7 +212,7 @@ export default {
       //let fileContent = this.resultToXML()     // uncomment this line  and remove the one above when resultToXml is ready
       let file = new Blob([fileContent], {type: 'text/xml'});
 
-      let date = new Date()
+      let date = new Date();
       date = date.toLocaleDateString("fr-FR");
 
       //if email is set we can store it in local storage for next time
@@ -220,7 +220,7 @@ export default {
         localStorage.setItem('email', this.email);
       }
 
-      let fileName = "Postiterie " + date; 
+      const fileName = `Postiterie ${date}`;
 
       let metadata = {
           'name': fileName, // Filename at Google Drive
@@ -240,9 +240,24 @@ export default {
       xhr.onload = () => {
         if (xhr.response.id){
           $this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
+          //if email input, send mail else redirect to the file
+          if (this.email){
+              $this.prepareMail();
+          }
+          else{
+              window.location.href = $this.link;
+          }
         }
       };
       xhr.send(form);
+    },
+
+    // function prepareMail 
+    // TODO
+    // no IO
+    // call the mail API or our mail server
+    prepareMail: function(){
+        console.log("prepareMail was fired");
     }
   },
   mounted: function(){

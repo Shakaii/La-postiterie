@@ -14,7 +14,7 @@ export default {
             this.$emit('fileupload', name, file);
         }
     }
-}
+};
 
 </script>
 

@@ -17,7 +17,7 @@ export default {
     data () {
         return {
             email: ""
-        }
+        };
     },
     methods: {
         uploadClick(){
@@ -35,10 +35,11 @@ export default {
         }
       
     }
-}
+};
 </script>
 
 <style scoped>
+
   .upload-container .input{
       width: calc(60% - 1em);
       margin-right: 1em;
