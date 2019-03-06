@@ -6,11 +6,11 @@
 </template>
 
 <script>
-import Postiterie from './components/Postiterie.vue'
-import Header from './components/Header.vue'
-import tracking from 'tracking'
-import gapi from './gapi.js'
-import materialIcons from 'material-icons'
+import Postiterie from './components/Postiterie.vue';
+import Header from './components/Header.vue';
+import tracking from 'tracking';
+import gapi from './gapi.js';
+import materialIcons from 'material-icons';
 
 export default {
   name: 'app',
@@ -18,7 +18,7 @@ export default {
     Postiterie,
     Header
   }
-}
+};
 </script>
 
 <style>
