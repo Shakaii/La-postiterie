@@ -113,7 +113,7 @@ export default {
     tracking: function () {
       
       let $this = this;
-      $this.results = [];
+      this.results = [];
 
       let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
 
@@ -238,13 +238,19 @@ export default {
       xhr.responseType = 'json';
       xhr.onload = () => {
         if (xhr.response.id){
+          
           this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
+
+          //This generates a direct link to drawIO, but the file needs to be manually opened with drawIO first
+          //let profileId = gapi.auth2.getAuthInstance().currentUser.get().getId();
+          //this.link = 'https://www.draw.io/?state={"ids":["' + xhr.response.id + '"],"action":"open","userId":"' + profileId + '"}' + '#G' + xhr.response.id
+
           //if email input, send mail else redirect to the file
           if (this.email){
-              this.prepareMail();
+            this.prepareMail();
           }
           else{
-              window.location.href = this.link;
+            window.location.href = this.link;
           }
         }
       };
