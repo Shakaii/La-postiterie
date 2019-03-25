@@ -114,9 +114,9 @@ export default {
     tracking: function () {
       
       let $this = this;
-      $this.results = [];
-      $this.temps = []
-      $this.pos = []
+      this.results = [];
+      this.temps = []
+      this.pos = []
 
       let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
 
@@ -156,16 +156,21 @@ export default {
     // return the XML from the result array[];
     resultToXML: function(){
       let $this = this;
-      let xml = '<?xml version="1.0" encoding="UTF-8"?><mxGraphModel dx="1190" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0"><root><mxCell id="0" /><mxCell id="1" parent="0" />';
+      let xml = process.env.VUE_APP_XML_ENTETE;
+      //let xml = '<?xml version="1.0" encoding="UTF-8"?><mxGraphModel dx="1190" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0"><root><mxCell id="0" /><mxCell id="1" parent="0" />';
       this.temps.forEach(function (el, index) {
-        let base = el.replace(";base64", "");
-        xml+=`<mxCell id="xVlBypw9ISABlRlfdyYR-`+index+`" value="" 
-style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=`+base+`;"
-            vertex="1" parent="1">
-			<mxGeometry x="`+$this.pos[index].x+`" y="`+$this.pos[index].y+`" width="`+$this.pos[index].width+`" height="`+$this.pos[index].height+`" as="geometry" /></mxCell>`
+        xml+=$this.forXml(el, index)
       })
       xml+='</root></mxGraphModel>'
       return xml;
+    },
+
+    forXml(el, index) {
+      let base = el.replace(";base64", "");
+      return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}" value="" 
+style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=${base};"
+            vertex="1" parent="1">
+			<mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
     },
 
     ///////////////////////////////
