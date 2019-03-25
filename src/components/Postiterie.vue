@@ -2,9 +2,9 @@
 
   <div class="container">
 
-    <TakePhoto/>
+    <TakePhoto @fileupload="getImage" />
     <ImportPhoto  @fileupload="getImage" />
-    <UploadPhoto @uploadClick="tracking" @inputChange="updateFileName" v-if="image && !link"/>
+    <UploadPhoto @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
 
     <div class="info" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
@@ -25,9 +25,9 @@
 
   var authorizeButton;
 
-import TakePhoto from './TakePhoto.vue'
-import ImportPhoto from './ImportPhoto.vue'
-import UploadPhoto from './UploadPhoto.vue'
+import TakePhoto from './TakePhoto.vue';
+import ImportPhoto from './ImportPhoto.vue';
+import UploadPhoto from './UploadPhoto.vue';
 
 export default {
 
@@ -44,7 +44,8 @@ export default {
       authorized: false,
       link: null,
       fileName: "",
-      pos:[]
+      pos:[],
+      email: ""
     }
   },
   methods: {
@@ -52,8 +53,8 @@ export default {
     //  updateFileName
     //  update the filename when the value from UploadPhoto's component is updated
     //
-    updateFileName: function(newFileName){
-      this.fileName = newFileName;
+    updateEmail: function(newEmail){
+      this.email = newEmail;
     },
 
     /* 
@@ -225,18 +226,20 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     sendFile: function(){
       let $this = this;
       let fileContent = this.resultToXML()
-      //let fileContent = this.resultToXML()
       $this.results.forEach(function (res) {
         
       })
       let file = new Blob([fileContent], {type: 'text/xml'});
 
-      let fileName ="";
+      let date = new Date();
+      date = date.toLocaleDateString("fr-FR");
 
-      if (this.fileName){
-        fileName = this.fileName
+      //if email is set we can store it in local storage for next time
+      if (this.email){
+        localStorage.setItem('email', this.email);
       }
-      else fileName = "La Postiterie - schéma sans nom"
+
+      const fileName = `Postiterie ${date}`;
 
       let metadata = {
           'name': fileName, // Filename at Google Drive
@@ -255,10 +258,25 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
       xhr.responseType = 'json';
       xhr.onload = () => {
         if (xhr.response.id){
-          $this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
+          this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
+          //if email input, send mail else redirect to the file
+          if (this.email){
+              this.prepareMail();
+          }
+          else{
+              window.location.href = this.link;
+          }
         }
       };
       xhr.send(form);
+    },
+
+    // function prepareMail 
+    // TODO
+    // no IO
+    // call the mail API or our mail server
+    prepareMail: function(){
+        console.log("prepareMail was fired");
     }
   },
   mounted: function(){

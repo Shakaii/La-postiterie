@@ -7,7 +7,7 @@
 <script>
 export default {
     name: 'Header'
-}
+};
 </script>
 
 <style scoped>
@@ -22,8 +22,6 @@ header {
     text-align:center;
     font-weight: 900;
     padding : 4px 12px 5px 0px;
-    
-    
 }
 
 img{
