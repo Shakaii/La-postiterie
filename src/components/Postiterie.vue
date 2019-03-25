@@ -126,8 +126,11 @@ export default {
         let images = event.data;
         const croppedImagePromises = images.map((image)=>{
           return new Promise(function(resolve){
+            console.log(image);
+            let colorHexa = $this.colorToHexa(image.color);
+
             let croppedImageData = $this.crop(image.x,image.y,image.width,image.height);
-            $this.pos.push(new Object({x: image.x, y: image.y, width: image.width, height: image.height}))
+            $this.pos.push(new Object({x: image.x, y: image.y, width: image.width, height: image.height, color: colorHexa}));
             let croppedImage = $this.imageDataToImage(croppedImageData);
             $this.temps.push(croppedImage.src)
             $this.results.push(croppedImage);
@@ -151,6 +154,21 @@ export default {
       tracking.track('#preview', tracker);
     },
 
+    // function colorToHexa
+    // param : the color detected by the tracker
+    // return : the hexadecimal code of the color
+    colorToHexa: function(color){
+      if(color=="yellow"){
+        return "#ffff00";
+      }
+      if(color=="magenta"){
+        return "#ff0066";
+      }
+      if(color=="cyan"){
+        return "#00ccff";
+      }
+    },
+
 
     // function resultToXML
     // TODO
@@ -171,7 +189,11 @@ export default {
       return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}" value="" 
 style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=${base};"
             vertex="1" parent="1">
-			<mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
+      <mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>
+      <mxCell id="xVlBypw9ISABlRlfdyYR-${index}-rec" value=""
+      style="shape=rectangle;fillColor=${this.pos[index].color};"
+             vertex="1" parent="1">
+      <mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
     },
 
     ///////////////////////////////
