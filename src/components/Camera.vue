@@ -40,8 +40,6 @@ export default {
                 context.fillStyle = "#fff";
                 });
             });
-            // what is this function for ? not defined in trackingjs
-            //initGUIControllers(tracker);
         },
 
         //onclick on the camera, take a screenshot of it and emit it
@@ -85,8 +83,4 @@ video, canvas {
     width: 100vw;
     background-color: rgba(0,0,0,0.8);  
 }
-
-
-
-
 </style>
