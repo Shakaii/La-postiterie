@@ -2,7 +2,8 @@
 
   <div class="container">
 
-    <TakePhoto @fileupload="getImage" />
+    <Camera v-on:screenshot="getImageFromScreenshot" v-if="camera" />
+    <TakePhoto v-on:clicked="camera = true" @fileupload="getImage" />
     <ImportPhoto  @fileupload="getImage" />
     <UploadPhoto @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
 
@@ -28,6 +29,8 @@
 import TakePhoto from './TakePhoto.vue';
 import ImportPhoto from './ImportPhoto.vue';
 import UploadPhoto from './UploadPhoto.vue';
+import Camera from './Camera.vue';
+import { Email } from '../smtp.js'
 
 export default {
 
@@ -35,7 +38,8 @@ export default {
   components: {
     TakePhoto,
     ImportPhoto,
-    UploadPhoto
+    UploadPhoto,
+    Camera
   },
   data () {
     return {
@@ -43,7 +47,8 @@ export default {
       results: [],
       authorized: false,
       link: null,
-      email: ""
+      email: "",
+      camera : false
     }
   },
   methods: {
@@ -111,7 +116,7 @@ export default {
       TODO : investigate odd behavior --> the function doesn't work if not started from a onclick event (likely due to tracker.on('track', function(event))) )
     */
     tracking: function () {
-      
+
       let $this = this;
       this.results = [];
 
@@ -257,13 +262,32 @@ export default {
       xhr.send(form);
     },
 
+    getImageFromScreenshot: function(image){
+      this.camera = false;
+      this.image = image.src; 
+    },
+
     // function prepareMail 
     // TODO
     // no IO
     // call the mail API or our mail server
     prepareMail: function(){
-        console.log("prepareMail was fired");
+        //  Using smtpjs to send mail
+        // TODO : smtpjs can encrypt credentiel and return a token but we need to pass a domain name so come back here for deplyment
+        Email.send({
+          Host : "smtp.gmail.com",
+          Username : process.env.VUE_APP_SMTP_EMAIL,
+          Password : process.env.VUE_APP_SMTP_PASSWORD,
+          To : this.email,
+          From : process.env.VUE_APP_SMTP_EMAIL,
+          Subject : "Nouveau schéma généré",
+          Body : "Voici un lien vers le schéma que vous venez de générer " + this.link
+      }).catch(e => {
+        console.log(e);
+      });
+      
     }
+
   },
   mounted: function(){
     this.handleClientLoad(); //gapi initialisation
