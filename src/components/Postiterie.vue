@@ -2,9 +2,10 @@
 
   <div class="container">
 
-    <TakePhoto @fileupload="getImage" />
-    <ImportPhoto @fileupload="getImage" />
-    <UploadPhoto @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link" />
+    <Camera v-on:screenshotTaken="getImageFromScreenshot" v-if="camera" />
+    <TakePhoto v-on:clicked="camera = true" @fileupload="getImage" />
+    <ImportPhoto  @fileupload="getImage" />
+    <UploadPhoto @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
 
     <div class="info" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
@@ -22,34 +23,37 @@
 <script src="../src/tracking.js"></script>
 
 <script>
-  var authorizeButton;
+var authorizeButton;
 
-  import TakePhoto from './TakePhoto.vue';
-  import ImportPhoto from './ImportPhoto.vue';
-  import UploadPhoto from './UploadPhoto.vue';
+import TakePhoto from './TakePhoto.vue';
+import ImportPhoto from './ImportPhoto.vue';
+import UploadPhoto from './UploadPhoto.vue';
+import Camera from './Camera.vue';
+import { Email } from '../smtp.js';
 
-  export default {
+export default {
 
-    name: 'Postiterie',
-    components: {
-      TakePhoto,
-      ImportPhoto,
-      UploadPhoto
-    },
-    data() {
-      return {
-        image: null,
-        results: [],
-        authorized: false,
-        link: null,
-        fileName: "",
-        pos: [],
-        email: ""
-      }
-    },
+  name: 'Postiterie',
+  components: {
+    TakePhoto,
+    ImportPhoto,
+    UploadPhoto,
+    Camera
+  },
+  data () {
+    return {
+      image: null,
+      results: [],
+      authorized: false,
+      link: null,
+      email: "",
+      camera : false
+    }
+  },
+ 
     methods: {
 
-      //  updateFileName
+      //  updateEmail
       //  update the filename when the value from UploadPhoto's component is updated
       //
       updateEmail: function (newEmail) {
@@ -288,45 +292,65 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
           'name': fileName, // Filename at Google Drive
           'mimeType': 'text/xml', // mimeType at Google Drive
           'parents': ['root'], // Folder ID at Google Drive
-        };
+      };
 
-        let accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
-        let form = new FormData();
-        form.append('metadata', new Blob([JSON.stringify(metadata)], {
-          type: 'application/json'
-        }));
-        form.append('file', file);
+      let accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
+      let form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+      form.append('file', file);
 
-        let xhr = new XMLHttpRequest();
-        xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-        xhr.responseType = 'json';
-        xhr.onload = () => {
-          if (xhr.response.id) {
-            this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
-            //if email input, send mail else redirect to the file
-            if (this.email) {
-              this.prepareMail();
-            } else {
-              window.location.href = this.link;
-            }
+      let xhr = new XMLHttpRequest();
+      xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+      xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+      xhr.responseType = 'json';
+      xhr.onload = () => {
+        if (xhr.response.id){
+          
+          this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
+
+          //if email input, send mail else redirect to the file
+          if (this.email){
+            this.prepareMail();
           }
-        };
-        xhr.send(form);
-      },
-
-      // function prepareMail 
-      // TODO
-      // no IO
-      // call the mail API or our mail server
-      prepareMail: function () {
-        console.log("prepareMail was fired");
-      }
+          else{
+            window.location.href = this.link;
+          }
+        }
+      };
+      xhr.send(form);
     },
-    mounted: function () {
-      this.handleClientLoad(); //gapi initialisation
+
+    getImageFromScreenshot: function(image){
+      this.camera = false;
+      this.image = image.src; 
+    },
+
+    // function prepareMail 
+    // TODO
+    // no IO
+    // call the mail API or our mail server
+    prepareMail: function(){
+        //  Using smtpjs to send mail
+        // TODO : smtpjs can encrypt credentiel and return a token but we need to pass a domain name so come back here for deplyment
+        Email.send({
+          Host : "smtp.gmail.com",
+          Username : process.env.VUE_APP_SMTP_EMAIL,
+          Password : process.env.VUE_APP_SMTP_PASSWORD,
+          To : this.email,
+          From : process.env.VUE_APP_SMTP_EMAIL,
+          Subject : "Nouveau schéma généré",
+          Body : "Voici un lien vers le schéma que vous venez de générer " + this.link
+      }).catch(e => {
+        console.log("Oups, il y a eu une erreur lors de l'envoi du mail :(");
+      });
+      
     }
+
+  },
+  mounted: function(){
+    this.handleClientLoad(); //gapi initialisation
   }
+}
 </script>
 
 <style>
