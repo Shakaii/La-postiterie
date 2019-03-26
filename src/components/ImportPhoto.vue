@@ -1,7 +1,7 @@
 <template>
     <div class="small-button-container">
       <label for="file" class="button small-button">Importer une photo <i class="material-icons">photo_library</i></label>
-      <input style="display:none" id="file" type="file" @change="fileUpload($event.target.name, $event.target.files)" accept="image/png, image/jpeg">
+      <input style="display:none" id="file" type="file" @change="fileUpload($event.target.name, $event.target.files)"  accept="image/*;capture=camera">
     </div>
 </template>
 

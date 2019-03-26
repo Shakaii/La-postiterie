@@ -1,7 +1,11 @@
 <template>
-    <div v-on:click="screenshot"class="frame">
+    <div class="frame">
         <video width="600" height="450"  id="video" preload autoplay loop muted></video>
         <canvas width="600" height="450"   id="canvas"></canvas>
+        <div class="actionButtonContainer">
+            <button v-on:click="cancel" class="cancel"><i class="material-icons">cancel</i></button>
+            <button v-on:click="screenshot" class="takePhoto"><i class="material-icons">photo_camera</i></button>
+        </div>
     </div>
 </template>
 
@@ -55,6 +59,12 @@ export default {
                 img.src = window.URL.createObjectURL(blob);
                 this.$emit('screenshotTaken', img);
             });
+        },
+
+        //cancel the photo taking
+        cancel(){
+            console.log("test");
+            this.$emit('screenshotCancelled');
         }
     }
 };
@@ -82,5 +92,25 @@ video, canvas {
     height: 100vh;
     width: 100vw;
     background-color: rgba(0,0,0,0.8);  
+}
+
+button{
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    border-style:none;
+    font-size: 25px;
+    margin-bottom:4px;
+    border-radius: 500px;
+    color: white;
+}
+
+.actionButtonContainer{
+    bottom:0;
+    position: fixed;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items:center;
+    width: 100vw;
 }
 </style>

@@ -2,7 +2,7 @@
 
   <div class="container">
 
-    <Camera v-on:screenshotTaken="getImageFromScreenshot" v-if="camera" />
+    <Camera v-on:screenshotCancelled="camera = false" v-on:screenshotTaken="getImageFromScreenshot" v-if="camera" />
     <TakePhoto v-on:clicked="camera = true" @fileupload="getImage" />
     <ImportPhoto  @fileupload="getImage" />
     <UploadPhoto @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
@@ -11,8 +11,8 @@
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
     </div>
 
-    <div class="big-button-container" v-if="link">
-      <a class="button big-button" target="_blank" v-bind:href="link">Ouvrir le schéma avec drawIO</a>
+    <div class="big-button-container link" v-if="link">
+      <a class="button big-button" target="_blank" v-bind:href="link">Ouvrir le schéma avec drawIO<br><i class="material-icons">open_in_new</i></a>
     </div>
 
     <!-- has to be here for tracking-->
@@ -46,6 +46,7 @@ export default {
       results: [],
       authorized: false,
       link: null,
+      directLink: null,
       email: "",
       camera : false
     }
@@ -265,12 +266,6 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
         gapi.auth2.getAuthInstance().signIn();
       },
 
-      // Sign out the user upon button click.
-      // not used as of now
-      /*handleSignoutClick: function(event) {
-        gapi.auth2.getAuthInstance().signOut();
-      },*/
-
       sendFile: function () {
         let $this = this;
         let fileContent = this.resultToXML()
@@ -306,7 +301,12 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
       xhr.onload = () => {
         if (xhr.response.id){
           
+          //the link to the file on google drive
           this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
+
+          //the link to the file on drawIO (if already allowed on google drive)
+          let profileId = gapi.auth2.getAuthInstance().currentUser.get().getId();
+          this.directLink = 'https://www.draw.io/?state={"ids":["' + xhr.response.id + '"],"action":"open","userId":"' + profileId + '"}' + '#G' + xhr.response.id
 
           //if email input, send mail else redirect to the file
           if (this.email){
@@ -339,7 +339,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
           To : this.email,
           From : process.env.VUE_APP_SMTP_EMAIL,
           Subject : "Nouveau schéma généré",
-          Body : "Voici un lien vers le schéma que vous venez de générer " + this.link
+          Body : "Voici un lien vers le schéma que vous venez de générer " + this.link + " Vous n'avez plus qu'a ouvrir le schéma avec drawIO. Si vous l'avez déjà fait, utilisez plutôt ce lien : " + this.directLink
       }).catch(e => {
         console.log("Oups, il y a eu une erreur lors de l'envoi du mail :(");
       });
@@ -408,4 +408,8 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     margin-top: 1em;
     text-align: center;
   }
+
+  .link i{
+    color: var(--small-button-icon);
+}
 </style>
