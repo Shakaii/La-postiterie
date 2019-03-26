@@ -2,7 +2,7 @@
 
   <div class="container">
 
-    <Camera v-on:screenshot="getImageFromScreenshot" v-if="camera" />
+    <Camera v-on:screenshotTaken="getImageFromScreenshot" v-if="camera" />
     <TakePhoto v-on:clicked="camera = true" @fileupload="getImage" />
     <ImportPhoto  @fileupload="getImage" />
     <UploadPhoto @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
@@ -283,7 +283,7 @@ export default {
           Subject : "Nouveau schéma généré",
           Body : "Voici un lien vers le schéma que vous venez de générer " + this.link
       }).catch(e => {
-        console.log(e);
+        console.log("Oups, il y a eu une erreur lors de l'envoi du mail :(");
       });
       
     }

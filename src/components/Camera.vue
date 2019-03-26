@@ -29,12 +29,12 @@ export default {
             let context = canvas.getContext('2d');
             let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
             tracking.track('#video', tracker, { camera: true });
-            tracker.on('track', function(event) {
+            tracker.on('track', (event) => {
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 event.data.forEach(function(rect) {
-                if (rect.color === 'custom') {
-                    rect.color = tracker.customColor;
-                }
+                    if (rect.color === 'custom') {
+                        rect.color = tracker.customColor;
+                    }
                 context.strokeStyle = rect.color;
                 context.strokeRect(rect.x, rect.y, rect.width, rect.height);
                 context.fillStyle = "#fff";
@@ -53,7 +53,7 @@ export default {
             canvas.toBlob((blob) => {
                 let img = document.createElement('img');
                 img.src = window.URL.createObjectURL(blob);
-                this.$emit('screenshot', img);
+                this.$emit('screenshotTaken', img);
             });
         }
     }
