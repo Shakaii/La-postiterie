@@ -114,7 +114,6 @@ export default {
             var myImg = document.getElementById("preview");
             var realWidth = myImg.width;
             var realHeight = myImg.naturalHeight;
-            console.log(myImg )
     },
 
     /*
@@ -352,7 +351,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
           To : this.email,
           From : process.env.VUE_APP_SMTP_EMAIL,
           Subject : "Nouveau schéma généré",
-          Body : "Voici un lien vers le schéma que vous venez de générer " + this.link + " Vous n'avez plus qu'a ouvrir le schéma avec drawIO. Si vous l'avez déjà fait, utilisez plutôt ce lien : " + this.directLink
+          Body : "Voici un lien vers le schéma que vous venez de générer " + this.link + " Vous n'avez plus qu'à ouvrir le schéma avec drawIO. Si vous l'avez déjà fait, utilisez plutôt ce lien : " + this.directLink
       }).catch(e => {
         console.log("Oups, il y a eu une erreur lors de l'envoi du mail :(");
       });
