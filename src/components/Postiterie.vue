@@ -112,41 +112,36 @@
     },
 
     /*
-      FUNCTION tracking
-      Track post-its and add them to results[]
-      Then, send the file
-      TODO : investigate odd behavior --> the function doesn't work if not started from a onclick event (likely due to tracker.on('track', function(event))) )
-    */
-    tracking: function () {
-      
-      let $this = this;
-      this.results = [];
-      this.temps = []
-      this.pos = []
-
-      let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
-
-      tracker.on('track', function(event) {
-
-        let images = event.data;
-        const croppedImagePromises = images.map((image)=>{
-          return new Promise(function(resolve){
-            let colorHexa = $this.colorToHexa(image.color);
-
-            let croppedImageData = $this.crop(image.x,image.y,image.width,image.height);
-            $this.pos.push(new Object({
-              x: image.x, 
-              y: image.y, 
-              width: image.width, 
-              height: image.height, 
-              color: colorHexa
-            }));
-            let croppedImage = $this.imageDataToImage(croppedImageData);
-            $this.temps.push(croppedImage.src)
-            $this.results.push(croppedImage);
-            resolve();
+        FUNCTION tracking
+        Track post-its and add them to results[]
+        Then, send the file
+        TODO : investigate odd behavior --> the function doesn't work if not started from a onclick event (likely due to tracker.on('track', function(event))) )
+      */
+      tracking: function () {
+        let $this = this;
+        this.results = [];
+        this.temps = []
+        this.pos = []
+        let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
+        tracker.on('track', function (event) {
+          let images = event.data;
+          const croppedImagePromises = images.map((image) => {
+            return new Promise(function (resolve) {
+              let colorHexa = $this.colorToHexa(image.color);
+              let croppedImageData = $this.crop(image.x, image.y, image.width, image.height);
+              $this.pos.push(new Object({
+                x: image.x,
+                y: image.y,
+                width: image.width,
+                height: image.height, 
+                color: colorHexa
+              }))
+              let croppedImage = $this.imageDataToImage(croppedImageData);
+              $this.temps.push(croppedImage.src)
+              $this.results.push(croppedImage);
+              resolve();
+            });
           });
-
           Promise.all(croppedImagePromises).then(() => {
             if ($this.results.length) {
               if ($this.authorized) {
@@ -160,8 +155,8 @@
             }
           });
         });
-
-     tracking.track('#preview', tracker);
+        tracking.track('#preview', tracker);
+    
     },
 
     // function colorToHexa
