@@ -2,10 +2,10 @@
 
   <div class="container">
 
-    <Camera v-on:screenshotCancelled="camera = false" v-on:screenshotTaken="getImageFromScreenshot" v-if="camera" />
+    <Camera v-on:closeCamera="camera = false" v-on:screenshotTaken="getImageFromScreenshot" v-if="camera" />
     <TakePhoto v-on:clicked="camera = true" @fileupload="getImage" />
     <ImportPhoto  @fileupload="getImage" />
-    <UploadPhoto @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
+    <UploadPhoto v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
 
     <div class="info" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
@@ -48,7 +48,8 @@ export default {
       link: null,
       directLink: null,
       email: "",
-      camera : false
+      camera : false,
+      useGmail: true
     }
   },
  
@@ -232,7 +233,6 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
         return gapi.load('client:auth2', this.initClient);
       },
 
-
       //Initializes the API client library and sets up sign-in state listeners.
       initClient: function () {
 
@@ -264,6 +264,11 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
       // Sign in the user upon button click.
       handleAuth: function () {
         gapi.auth2.getAuthInstance().signIn();
+      },
+
+      //on emit update useGmail
+      updateGmail: function(useGmail){
+        this.useGmail = useGmail;
       },
 
       sendFile: function () {
@@ -306,22 +311,30 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
 
           //the link to the file on drawIO (if already allowed on google drive)
           let profileId = gapi.auth2.getAuthInstance().currentUser.get().getId();
+
           this.directLink = 'https://www.draw.io/?state={"ids":["' + xhr.response.id + '"],"action":"open","userId":"' + profileId + '"}' + '#G' + xhr.response.id
 
-          //if email input, send mail else redirect to the file
-          if (this.email){
-            this.prepareMail();
+          //if the user chose to use his gmail email
+          if(this.useGmail){
+              this.email = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().U3;
+              this.prepareMail();
           }
           else{
-            window.location.href = this.link;
+            //if email input, send mail else redirect to the file
+            if (this.email){
+              this.prepareMail();
+            }
+            else{
+              window.location.href = this.link;
+            }
           }
         }
       };
       xhr.send(form);
     },
 
+    //set the received image
     getImageFromScreenshot: function(image){
-      this.camera = false;
       this.image = image.src; 
     },
 

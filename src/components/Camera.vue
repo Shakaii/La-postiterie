@@ -54,6 +54,8 @@ export default {
             canvas.width = video.width;
             canvas.height = video.height
             ctx.drawImage(video, 0, 0);
+            //closing the camera once the screen is taken
+            this.$emit('closeCamera');
             canvas.toBlob((blob) => {
                 let img = document.createElement('img');
                 img.src = window.URL.createObjectURL(blob);
@@ -63,8 +65,7 @@ export default {
 
         //cancel the photo taking
         cancel(){
-            console.log("test");
-            this.$emit('screenshotCancelled');
+            this.$emit('closeCamera');
         }
     }
 };
@@ -74,14 +75,16 @@ export default {
 <style scoped>
 
 video{
-    margin-top: 1em;
-    margin-left: -33vw;
+    margin-top: -3em;
     background-color: black;
 }
 
 video, canvas {
     position: absolute;
-  }
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
 .frame{
     padding: 0;
