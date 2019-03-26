@@ -71,73 +71,70 @@
         let image = new Image();
         image.src = canvas.toDataURL();
         return image;
-      },
 
-      /*
-        FUNCTION crop
-        Crop an image using the coordinates and return its imageData
-        IN : x, y (numbers) coordinates from which to start croping
-             width, height (numbers) length to crop
-        OUT: imageData
-      */
-      crop: function (x, y, width, height) {
-        let canvas = document.createElement('canvas');
-        let context = canvas.getContext('2d');
-        //document.getElementById("preview").style.transform = "rotate(90deg)";
-        let img = document.getElementById('preview');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        context.drawImage(img, 0, 0);
-        //context.rotate(90 * Math.PI / 180);
-        return context.getImageData(x, y, width, height);
-      },
+    },
 
-      /*
-        FUNCTION getImage
-        get the uploaded image and start the tracking
-        IN : fieldName : the fieldName ;)
-             file : the image
-      */
-      getImage: function (fieldName, file) {
-        this.link = null;
-        let imageFile = file[0];
-        let formData = new FormData();
-        let imageURL = URL.createObjectURL(imageFile);
-        formData.append(fieldName, imageFile);
-        this.image = imageURL;
+    /*
+      FUNCTION crop
+      Crop an image using the coordinates and return its imageData
+      IN : x, y (numbers) coordinates from which to start croping
+           width, height (numbers) length to crop
+      OUT: imageData
+    */
+    crop: function( x, y, width, height){
+      let canvas = document.createElement('canvas');
+      let context = canvas.getContext('2d');
+      let img = document.getElementById('preview');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      context.drawImage(img, 0, 0);
+      return context.getImageData(x, y, width, height);
+    },
 
-        var myImg = document.getElementById("preview");
-        var realWidth = myImg.width;
-        var realHeight = myImg.naturalHeight;
-        console.log(myImg )
-      },
+    /*
+      FUNCTION getImage
+      get the uploaded image and start the tracking
+      IN : fieldName : the fieldName ;)
+           file : the image
+    */
+    getImage: function(fieldName, file) {
+            this.link = null;
+            let imageFile = file[0];
+            let formData = new FormData();
+            let imageURL = URL.createObjectURL(imageFile);
+            formData.append(fieldName, imageFile);
+            this.image=imageURL;
+            
+            var myImg = document.getElementById("preview");
+            var realWidth = myImg.width;
+            var realHeight = myImg.naturalHeight;
+            console.log(myImg )
+    },
 
-      /*
+    /*
         FUNCTION tracking
         Track post-its and add them to results[]
         Then, send the file
         TODO : investigate odd behavior --> the function doesn't work if not started from a onclick event (likely due to tracker.on('track', function(event))) )
       */
       tracking: function () {
-
         let $this = this;
         this.results = [];
         this.temps = []
         this.pos = []
-
         let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
-
         tracker.on('track', function (event) {
-
           let images = event.data;
           const croppedImagePromises = images.map((image) => {
             return new Promise(function (resolve) {
+              let colorHexa = $this.colorToHexa(image.color);
               let croppedImageData = $this.crop(image.x, image.y, image.width, image.height);
               $this.pos.push(new Object({
                 x: image.x,
                 y: image.y,
                 width: image.width,
-                height: image.height
+                height: image.height, 
+                color: colorHexa
               }))
               let croppedImage = $this.imageDataToImage(croppedImageData);
               $this.temps.push(croppedImage.src)
@@ -145,7 +142,6 @@
               resolve();
             });
           });
-
           Promise.all(croppedImagePromises).then(() => {
             if ($this.results.length) {
               if ($this.authorized) {
@@ -159,34 +155,68 @@
             }
           });
         });
-
         tracking.track('#preview', tracker);
-      },
+    
+    },
+
+    // function colorToHexa
+    // param : the color detected by the tracker
+    // return : the hexadecimal code of the color
+    colorToHexa: function(color){
+      if(color=="yellow"){
+        return "#ffff00";
+      }
+      if(color=="magenta"){
+        return "#ff0066";
+      }
+      if(color=="cyan"){
+        return "#00ccff";
+      }
+    },
 
 
-      // function resultToXML
-      // TODO
-      // return the XML from the result array[];
-      resultToXML: function () {
-        let $this = this;
-        let xml = process.env.VUE_APP_XML_ENTETE;
-        const ejs = require('ejs');
-        //const template = require('raw-loader!./docs_template.xml');
-        //const xml = ejs.render(template, {postits : this.temps});
-        this.temps.forEach(function (el, index) {
-          xml += $this.postItCreation(el, index)
-        })
-        xml += '</root></mxGraphModel>'
-        return xml;
-      },
+    // function resultToXML
+    // TODO
+    // return the XML from the result array[];
+    resultToXML: function(){
+      let $this = this;
+      let xml = process.env.VUE_APP_XML_ENTETE;
+      // adds the background shapes of the post its
+      this.temps.forEach(function (el, index) {
+        xml+=$this.forXmlBackground(el, index)
+      })
+      xml += '<mxCell id="layerParent" value="Post-its" parent="0"/>'
+      // adds the post-its themselves
+      this.temps.forEach(function (el, index) {
+        xml+=$this.forXmlPostIT(el, index)
+      })
+      xml+='</root></mxGraphModel>'
+      return xml;
+    },
 
-      postItCreation(el, index) {
-        let base = el.replace(";base64", "");
-        return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}" value="" 
+    // creates the xml code for the picture of the post it
+    // params : index -> the index of the picture
+    // el -> the picture
+    // returns : the xml code
+    forXmlPostIT(el, index) {
+      let base = el.replace(";base64", "");
+      return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}" value="" 
 style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=${base};"
-            vertex="1" parent="1">
-			<mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
-      },
+            vertex="1" parent="layerParent">
+      <mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
+    },
+
+    // creates the xml code for the shape of the post it in the background layer
+    // params : index -> the index of the picture
+    // el -> the picture
+    // returns : the xml code
+    forXmlBackground(el, index) {
+      let base = el.replace(";base64", "");
+      return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}-rec" value=""
+      style="shape=rectangle;fillColor=${this.pos[index].color};"
+             vertex="1" parent="1">
+      <mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
+    },
 
       ///////////////////////////////
       //  GOOGLE DRIVE FUNCTIONS   //
