@@ -8,8 +8,10 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "ejs": "^2.6.1",
     "googleapis": "^27.0.0",
     "material-icons": "^0.3.0",
+    "raw-loader": "^2.0.0",
     "tracking": "^1.1.3",
     "vue": "^2.5.21"
   },
