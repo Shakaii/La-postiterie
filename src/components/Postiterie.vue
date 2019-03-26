@@ -30,7 +30,7 @@ import TakePhoto from './TakePhoto.vue';
 import ImportPhoto from './ImportPhoto.vue';
 import UploadPhoto from './UploadPhoto.vue';
 import Camera from './Camera.vue';
-import { Email } from '../smtp.js'
+import { Email } from '../smtp.js';
 
 export default {
 
