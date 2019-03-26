@@ -423,5 +423,5 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
 
   .link i{
     color: var(--small-button-icon);
-}
+  }
 </style>
