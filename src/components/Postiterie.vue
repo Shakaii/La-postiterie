@@ -5,7 +5,8 @@
     <Camera v-on:closeCamera="camera = false" v-on:screenshotTaken="getImageFromScreenshot" v-if="camera" />
     <TakePhoto v-on:clicked="camera = true" @fileupload="getImage" />
     <ImportPhoto  @fileupload="getImage" />
-    <UploadPhoto v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="image && !link"/>
+    <UploadPhoto  v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="!progress && image && !link"/>
+    <progressBar text-position="middle" text="chargement en cours ..." v-if="progress" size="big" v-bind:val="progressPercentage"></progressBar>
 
     <div class="info" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
@@ -30,6 +31,7 @@ import ImportPhoto from './ImportPhoto.vue';
 import UploadPhoto from './UploadPhoto.vue';
 import Camera from './Camera.vue';
 import { Email } from '../smtp.js';
+import ProgressBar from 'vue-simple-progress'
 
 export default {
 
@@ -38,7 +40,8 @@ export default {
     TakePhoto,
     ImportPhoto,
     UploadPhoto,
-    Camera
+    Camera,
+    ProgressBar
   },
   data () {
     return {
@@ -49,7 +52,10 @@ export default {
       directLink: null,
       email: "",
       camera : false,
-      useGmail: true
+      useGmail: true,
+      progressIndex: 0,
+      progress: false,
+      progressPercentage: 0
     }
   },
  
@@ -116,6 +122,12 @@ export default {
             var realHeight = myImg.naturalHeight;
     },
 
+    //increment and update de progressBar
+    incrementProgressBar: function(){
+        this.progressIndex ++;
+        this.progressPercentage = (this.progressIndex * 100) / this.progressMax;
+    },
+
     /*
         FUNCTION tracking
         Track post-its and add them to results[]
@@ -125,11 +137,22 @@ export default {
       tracking: function () {
         let $this = this;
         this.results = [];
-        this.temps = []
-        this.pos = []
+        this.temps = [];
+        this.pos = [];
+        this.progress = true;
+
+        this.progressIndex = 0;
+        this.progressPercentage = 0;
+        
         let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
         tracker.on('track', function (event) {
           let images = event.data;
+          
+          
+          $this.progressMax = images.length + 2;
+          $this.progressPercentage = ($this.progressIndex * 100) / $this.progressMax;
+          $this.incrementProgressBar();
+
           const croppedImagePromises = images.map((image) => {
             return new Promise(function (resolve) {
               let colorHexa = $this.colorToHexa(image.color);
@@ -144,6 +167,8 @@ export default {
               let croppedImage = $this.imageDataToImage(croppedImageData);
               $this.temps.push(croppedImage.src)
               $this.results.push(croppedImage);
+              $this.incrementProgressBar();
+
               resolve();
             });
           });
@@ -298,15 +323,21 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
         form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
         form.append('file', file);
 
+        this.incrementProgressBar();
+
         let xhr = new XMLHttpRequest();
         xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
         xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
         xhr.responseType = 'json';
         xhr.onload = () => {
           if (xhr.response.id){
+
+            this.incrementProgressBar();
             
             //the link to the file on google drive
             this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
+
+            this.progress = false;
 
             //the link to the file on drawIO (if already allowed on google drive)
             let profileId = gapi.auth2.getAuthInstance().currentUser.get().getId();
@@ -331,7 +362,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
                 this.email = gmail;
               } 
               else {
-                console.log("Il y a eu une erreur lors de la récupération de votre adresse Gmail")
+                this.displayError("Oups! Nous n'avons pas pu récupérer l'adresse mail associée à votre compte google :/");
               }
             }
             //if email is set, send mail else redirect to the file
@@ -349,6 +380,16 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     //set the received image
     getImageFromScreenshot: function(image){
       this.image = image.src; 
+    },
+
+    //use vue-toasted to display an error
+    displayError: function(message){
+      this.$toasted.show(message, { 
+	      theme: "bubble", 
+	      position: "top-left", 
+        duration : 10000,
+        icon: 'error'
+      });
     },
 
     // function prepareMail 
@@ -376,7 +417,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
           Subject : "Nouveau schéma généré",
           Body : body
       }).catch(e => {
-        console.log("Oups, il y a eu une erreur lors de l'envoi du mail :(");
+          this.displayError("Oups! Il y a eu une erreur lors de l'envoi du mail :/");
       });
       
     }
@@ -389,6 +430,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
 </script>
 
 <style>
+
   .button {
     box-sizing: border-box;
     text-align: center;
@@ -429,9 +471,20 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     align-items: center;
     user-select: none;
   }
+
+  .vue-simple-progress{
+    margin-top: 1em;
+    width: 80vw;
+  }
+
+  .vue-simple-progress-text{
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 1em!important;
+  }
 </style>
 
 <style scoped>
+
   .container {
     display: flex;
     flex-direction: column;

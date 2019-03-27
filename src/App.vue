@@ -63,5 +63,8 @@ body {
     background-color: var(--body-background);
 }
 
+.toasted-container{
+  font-family: 'Fira Sans', sans-serif;
+}
 </style>
 
