@@ -291,35 +291,50 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
           'name': fileName, // Filename at Google Drive
           'mimeType': 'text/xml', // mimeType at Google Drive
           'parents': ['root'], // Folder ID at Google Drive
-      };
+        };
 
-      let accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
-      let form = new FormData();
-      form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
-      form.append('file', file);
+        let accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
+        let form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+        form.append('file', file);
 
-      let xhr = new XMLHttpRequest();
-      xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
-      xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-      xhr.responseType = 'json';
-      xhr.onload = () => {
-        if (xhr.response.id){
-          
-          //the link to the file on google drive
-          this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
+        let xhr = new XMLHttpRequest();
+        xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xhr.responseType = 'json';
+        xhr.onload = () => {
+          if (xhr.response.id){
+            
+            //the link to the file on google drive
+            this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
 
-          //the link to the file on drawIO (if already allowed on google drive)
-          let profileId = gapi.auth2.getAuthInstance().currentUser.get().getId();
+            //the link to the file on drawIO (if already allowed on google drive)
+            let profileId = gapi.auth2.getAuthInstance().currentUser.get().getId();
 
-          this.directLink = `https://www.draw.io/?state={"ids":["${xhr.response.id}"],"action":"open","userId":"${profileId}"}#G${xhr.response.id}`;
+            //making sure nothing breaks if chain does
+            if (profileId){
+              this.directLink = `https://www.draw.io/?state={"ids":["${xhr.response.id}"],"action":"open","userId":"${profileId}"}#G${xhr.response.id}`;
+            }
+            else {
+              this.directLink = "";
+            }
 
-          //if the user chose to use his gmail email
-          if(this.useGmail){
-              this.email = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().U3;
-              this.prepareMail();
-          }
-          else{
-            //if email input, send mail else redirect to the file
+            //if the user chose to use his gmail email, reset email to his gmail email
+            if(this.useGmail){
+              let gmail = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().U3;
+
+              //small regex to be sure we got an email
+              const mailregex = /\S+@\S+\.\S+/;
+
+              //if chain did not broke
+              if (mailregex.test(gmail)){
+                this.email = gmail;
+              } 
+              else {
+                console.log("Il y a eu une erreur lors de la récupération de votre adresse Gmail")
+              }
+            }
+            //if email is set, send mail else redirect to the file
             if (this.email){
               this.prepareMail();
             }
@@ -328,7 +343,6 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
             }
           }
         }
-      };
       xhr.send(form);
     },
 
@@ -342,6 +356,15 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     // no IO
     // call the mail API or our mail server
     prepareMail: function(){
+
+        let body = "";
+        if (this.directLink){
+          body = `Voici un lien vers le schéma que vous venez de générer ${this.link} Vous n'avez plus qu'à ouvrir le schéma avec drawIO. Si vous l'avez déjà fait, utilisez plutôt ce lien : ${this.directLink}`
+        } 
+        else{
+          body = `Voici un lien vers le schéma que vous venez de générer ${this.link} Vous n'avez plus qu'à ouvrir le schéma avec drawIO.`
+        }
+
         //  Using smtpjs to send mail
         // TODO : smtpjs can encrypt credentiel and return a token but we need to pass a domain name so come back here for deplyment
         Email.send({
@@ -351,7 +374,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
           To : this.email,
           From : process.env.VUE_APP_SMTP_EMAIL,
           Subject : "Nouveau schéma généré",
-          Body : `Voici un lien vers le schéma que vous venez de générer ${this.link} Vous n'avez plus qu'à ouvrir le schéma avec drawIO. Si vous l'avez déjà fait, utilisez plutôt ce lien : ${this.directLink}`
+          Body : body
       }).catch(e => {
         console.log("Oups, il y a eu une erreur lors de l'envoi du mail :(");
       });
