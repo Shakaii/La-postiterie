@@ -5,7 +5,7 @@
             <input id="checkbox" type="checkbox" v-model="useGmail" v-on:change="updateGmail">
             <label for="checkbox">Envoyer le lien sur mon adresse gmail</label><br><br>
         </div>
-        <input @change="inputChange" v-if="useGmail == false" id="email" placeholder="email" type="text" v-model="email">
+        <input v-bind:class="{ formValid: (isEmailValid && email.length >= 1), formInvalid: (!isEmailValid && email.length >= 1)}" @change="checkEmail" v-if="useGmail == false" id="email" placeholder="email" type="email" v-model="email">
       </div>
       <div class="round-button-container" >
         <button @click="uploadClick" class="round-button button">
@@ -21,10 +21,23 @@ export default {
     data () {
         return {
             email: "",
-            useGmail: true
+            useGmail: true,
+            isEmailValid: false
         };
     },
     methods: {
+        checkEmail(){
+            let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
+            if (regex.test(this.email)){
+                this.isEmailValid = true;
+                console.log("ok");
+            }
+            else {
+                console.log("non");
+                this.isEmailValid = false;
+            }
+            this.inputChange();
+        },
         updateGmail(){
             this.$emit('updateGmail', this.useGmail);
         },
@@ -32,7 +45,7 @@ export default {
             this.$emit('uploadClick');
         },
         inputChange(){
-            this.$emit('inputChange', this.email);
+            this.$emit('inputChange', this.email, this.isEmailValid);
         },
     },
     created: function(){
@@ -60,12 +73,22 @@ export default {
         box-sizing: border-box;
     }
 
+
     .upload-container .input #email{
+        margin-top: 1em;
         background-color: rgba(0,0,0,0);
         border-style:none;
         border-bottom-style:solid;
         border-bottom-color: black;
         width: 100%;
+    }
+
+    .formInvalid{
+        border-bottom-color: red!important;
+    }
+
+    .formValid{
+        border-bottom-color:green!important;
     }
 
     .upload-container .input input::placeholder{

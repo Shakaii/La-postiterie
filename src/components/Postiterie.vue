@@ -55,7 +55,8 @@ export default {
       useGmail: true,
       progressIndex: 0,
       progress: false,
-      progressPercentage: 0
+      progressPercentage: 0,
+      isEmailValid: false
     }
   },
  
@@ -64,8 +65,9 @@ export default {
       //  updateEmail
       //  update the filename when the value from UploadPhoto's component is updated
       //
-      updateEmail: function (newEmail) {
+      updateEmail: function (newEmail, isEmailValid) {
         this.email = newEmail;
+        this.isEmailValid = isEmailValid;
       },
 
       /* 
@@ -135,58 +137,64 @@ export default {
         TODO : investigate odd behavior --> the function doesn't work if not started from a onclick event (likely due to tracker.on('track', function(event))) )
       */
       tracking: function () {
-        let $this = this;
-        this.results = [];
-        this.temps = [];
-        this.pos = [];
-        this.progress = true;
 
-        this.progressIndex = 0;
-        this.progressPercentage = 0;
-        
-        let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
-        tracker.on('track', function (event) {
-          let images = event.data;
+        if(this.useGmail == false && this.email.length >= 1 && !this.isEmailValid){
+          this.displayError("Oups, votre email n'est pas valide, corrigez la et réessayez.")
+        }
+        else{
+
+          let $this = this;
+          this.results = [];
+          this.temps = [];
+          this.pos = [];
+          this.progress = true;
+
+          this.progressIndex = 0;
+          this.progressPercentage = 0;
           
-          
-          $this.progressMax = images.length + 2;
-          $this.progressPercentage = ($this.progressIndex * 100) / $this.progressMax;
-          $this.incrementProgressBar();
+          let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
+          tracker.on('track', function (event) {
+            let images = event.data;
+            
+            
+            $this.progressMax = images.length + 2;
+            $this.progressPercentage = ($this.progressIndex * 100) / $this.progressMax;
+            $this.incrementProgressBar();
 
-          const croppedImagePromises = images.map((image) => {
-            return new Promise(function (resolve) {
-              let colorHexa = $this.colorToHexa(image.color);
-              let croppedImageData = $this.crop(image.x, image.y, image.width, image.height);
-              $this.pos.push(new Object({
-                x: image.x,
-                y: image.y,
-                width: image.width,
-                height: image.height, 
-                color: colorHexa
-              }))
-              let croppedImage = $this.imageDataToImage(croppedImageData);
-              $this.temps.push(croppedImage.src)
-              $this.results.push(croppedImage);
-              $this.incrementProgressBar();
+            const croppedImagePromises = images.map((image) => {
+              return new Promise(function (resolve) {
+                let colorHexa = $this.colorToHexa(image.color);
+                let croppedImageData = $this.crop(image.x, image.y, image.width, image.height);
+                $this.pos.push(new Object({
+                  x: image.x,
+                  y: image.y,
+                  width: image.width,
+                  height: image.height, 
+                  color: colorHexa
+                }))
+                let croppedImage = $this.imageDataToImage(croppedImageData);
+                $this.temps.push(croppedImage.src)
+                $this.results.push(croppedImage);
+                $this.incrementProgressBar();
 
-              resolve();
+                resolve();
+              });
+            });
+            Promise.all(croppedImagePromises).then(() => {
+              if ($this.results.length) {
+                if ($this.authorized) {
+                  $this.sendFile();
+                } else {
+                  Promise.resolve(gapi.auth2.getAuthInstance().signIn())
+                    .then(() => {
+                      $this.sendFile();
+                    });
+                }
+              }
             });
           });
-          Promise.all(croppedImagePromises).then(() => {
-            if ($this.results.length) {
-              if ($this.authorized) {
-                $this.sendFile();
-              } else {
-                Promise.resolve(gapi.auth2.getAuthInstance().signIn())
-                  .then(() => {
-                    $this.sendFile();
-                  });
-              }
-            }
-          });
-        });
-        tracking.track('#preview', tracker);
-    
+          tracking.track('#preview', tracker);
+        }
     },
 
     // function colorToHexa
