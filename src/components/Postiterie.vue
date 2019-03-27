@@ -83,12 +83,10 @@
       crop: function (x, y, width, height) {
         let canvas = document.createElement('canvas');
         let context = canvas.getContext('2d');
-        //document.getElementById("preview").style.transform = "rotate(90deg)";
         let img = document.getElementById('preview');
         canvas.width = img.width;
         canvas.height = img.height;
         context.drawImage(img, 0, 0);
-        //context.rotate(90 * Math.PI / 180);
         return context.getImageData(x, y, width, height);
       },
 
@@ -105,11 +103,6 @@
         let imageURL = URL.createObjectURL(imageFile);
         formData.append(fieldName, imageFile);
         this.image = imageURL;
-
-        var myImg = document.getElementById("preview");
-        var realWidth = myImg.width;
-        var realHeight = myImg.naturalHeight;
-        console.log(myImg )
       },
 
       /*
@@ -128,7 +121,6 @@
         let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
 
         tracker.on('track', function (event) {
-
           let images = event.data;
           const croppedImagePromises = images.map((image) => {
             return new Promise(function (resolve) {
