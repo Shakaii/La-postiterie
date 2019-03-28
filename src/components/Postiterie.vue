@@ -8,7 +8,11 @@
     <UploadPhoto  v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="!progress && image && !link"/>
     <progressBar text-position="middle" text="chargement en cours ..." v-if="progress" size="big" v-bind:val="progressPercentage"></progressBar>
 
-    <div class="info" v-if="!image && !link">
+    <div class="info mobile" v-if="!image && !link">
+       Importez une photo pour générer un schéma
+    </div>
+
+    <div class="info screen" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
     </div>
 
@@ -489,6 +493,12 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     font-family: 'Fira Sans', sans-serif;
     font-size: 1em!important;
   }
+
+    @media (min-width: 900px) {
+       .vue-simple-progress{
+        width: 40vw;
+      }
+    }
 </style>
 
 <style scoped>
@@ -498,6 +508,8 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
+    width:50.8vw;
+    margin-left:25vw;
   }
 
   .info {
@@ -508,4 +520,22 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
   .link i{
     color: var(--small-button-icon);
   }
+
+  .screen{
+    display:none;
+  }
+
+  @media (max-width: 900px) {
+  .container {
+      width:100vw;
+      margin-left:0;
+  }
+  .mobile{
+    display:none;
+  }
+  .screen{
+    display:initial;
+  }
+}
+  
 </style>

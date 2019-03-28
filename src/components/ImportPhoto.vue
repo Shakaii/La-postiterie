@@ -1,6 +1,6 @@
 <template>
     <div class="small-button-container">
-      <label for="file" class="button small-button">Importer une photo <i class="material-icons">photo_library</i></label>
+      <label for="file" class="button small-button"><span>Importer une photo</span> <i class="material-icons">photo_library</i></label>
       <input style="display:none" id="file" type="file" @change="fileUpload($event.target.name, $event.target.files)"  accept="image/*;capture=camera">
     </div>
 </template>
@@ -48,7 +48,13 @@ export default {
 
 .small-button i{
     color: var(--small-button-icon);
+    margin-left:7px;
 }
 
+@media (min-width: 900px) {
+    .small-button{
+        padding: 1em;
+    }
+}
 
 </style>

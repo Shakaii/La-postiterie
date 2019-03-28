@@ -5,12 +5,13 @@
             <input id="checkbox" type="checkbox" v-model="useGmail" v-on:change="updateGmail">
             <label for="checkbox">Envoyer le lien sur mon adresse gmail</label><br><br>
         </div>
-        <input v-bind:class="{ formValid: (isEmailValid && email.length >= 1), formInvalid: (!isEmailValid && email.length >= 1)}" @change="checkEmail" v-if="useGmail == false" id="email" placeholder="email" type="email" v-model="email">
+        <input v-bind:class="{ formValid: (isEmailValid && email.length >= 1), formInvalid: (!isEmailValid && email.length >= 1)}" @change="checkEmail" v-if="useGmail == false" id="email" placeholder="email" type="text" v-model="email">
       </div>
       <div class="round-button-container" >
         <button @click="uploadClick" class="round-button button">
             <i class="material-icons">cloud_upload</i>
         </button>
+        <br><br>Exporter sur google drive
       </div>             
     </div> 
 </template>
@@ -28,7 +29,6 @@ export default {
     mounted(){
         //if email was saved we check it first at creation
         if (this.email){
-            console.log("test");
             this.checkEmail();
         }
     },
@@ -37,10 +37,8 @@ export default {
             let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
             if (regex.test(this.email)){
                 this.isEmailValid = true;
-                console.log("ok");
             }
             else {
-                console.log("non");
                 this.isEmailValid = false;
             }
             this.inputChange();
@@ -68,6 +66,10 @@ export default {
 
 <style scoped>
 
+    label{
+        margin-left:1em;
+    }
+
     .checkboxContainer{
         display:flex;
         flex-direction:row;
@@ -88,6 +90,7 @@ export default {
         border-bottom-style:solid;
         border-bottom-color: black;
         width: 100%;
+        font-family: 'Fira Sans', sans-serif;
     }
 
     .formInvalid{
@@ -139,5 +142,24 @@ export default {
         align-items:center;
         justify-content:center;
         user-select: none;
+    }
+
+    @media (min-width: 900px) {
+       .upload-container .input{
+            width: initial;
+        }
+        .upload-container {
+            flex-direction: column;
+            padding:1em;
+        }
+        .checkboxContainer{
+            margin-bottom:1em;
+        }
+        #email{
+            margin-bottom: 1em;
+        }
+        .round-button{
+            padding: 2em 3em 2em 3em;
+        }
     }
 </style>
