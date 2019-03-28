@@ -396,9 +396,9 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
 
     //use vue-toasted to display an error
     displayError: function(message){
-      this.$toasted.show(message, { 
-	      theme: "bubble", 
-	      position: "top-left", 
+      this.$toasted.show(message, {
+        theme: "bubble",
+        position: "top-left",
         duration : 10000,
         icon: 'error'
       });
