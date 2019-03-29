@@ -75,8 +75,7 @@ export default {
         let image = new Image();
         image.src = canvas.toDataURL();
         return image;
-
-    },
+      },
 
     /*
       FUNCTION crop
@@ -108,11 +107,6 @@ export default {
             let imageURL = URL.createObjectURL(imageFile);
             formData.append(fieldName, imageFile);
             this.image=imageURL;
-            
-            var myImg = document.getElementById("preview");
-            var realWidth = myImg.width;
-            var realHeight = myImg.naturalHeight;
-            console.log(myImg )
     },
 
     /*
