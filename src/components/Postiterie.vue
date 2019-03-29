@@ -8,6 +8,10 @@
     <UploadPhoto  v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="!progress && image && !link"/>
     <progressBar text-position="middle" text="chargement en cours ..." v-if="progress" size="big" v-bind:val="progressPercentage"></progressBar>
 
+    <div v-if="image" class="cancel" v-on:click="removeImage">
+      <i class="material-icons">cancel_presentation</i>
+    </div>
+
     <div class="info mobile" v-if="!image && !link">
        Importez une photo pour générer un schéma
     </div>
@@ -61,6 +65,12 @@ export default {
       progress: false,
       progressPercentage: 0,
       isEmailValid: false
+    }
+  },
+
+  created: function(){
+    if (localStorage.getItem('image')){
+      this.image = localStorage.getItem('image');
     }
   },
  
@@ -122,7 +132,7 @@ export default {
             let imageURL = URL.createObjectURL(imageFile);
             formData.append(fieldName, imageFile);
             this.image=imageURL;
-            
+            this.saveImage();
             var myImg = document.getElementById("preview");
             var realWidth = myImg.width;
             var realHeight = myImg.naturalHeight;
@@ -132,6 +142,11 @@ export default {
     incrementProgressBar: function(){
         this.progressIndex ++;
         this.progressPercentage = (this.progressIndex * 100) / this.progressMax;
+    },
+
+    removeImage: function(){
+        this.image = null;
+        localStorage.removeItem("image");
     },
 
     /*
@@ -159,7 +174,6 @@ export default {
           let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
           tracker.on('track', function (event) {
             let images = event.data;
-            
             
             $this.progressMax = images.length + 2;
             $this.progressPercentage = ($this.progressIndex * 100) / $this.progressMax;
@@ -194,6 +208,10 @@ export default {
                       $this.sendFile();
                     });
                 }
+              }else{
+                $this.displayError("Oups! Aucun post-it n'a été détecté dans cette image. Veuillez réessayer si c'est anormal.");
+                $this.progress = false;
+                $this.image = null;
               }
             });
           });
@@ -307,6 +325,13 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
         this.useGmail = useGmail;
       },
 
+      saveImage: function(){
+        if (this.image){
+          localStorage.setItem('image',this.image);
+        }
+      },
+
+      //upload the file to google drive
       sendFile: function () {
         let $this = this;
         let fileContent = this.resultToXML()
@@ -362,6 +387,8 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
               this.directLink = "";
             }
 
+           
+
             //if the user chose to use his gmail email, reset email to his gmail email
             if(this.useGmail){
               let gmail = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().U3;
@@ -384,6 +411,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
             else{
               window.location.href = this.link;
             }
+            localStorage.removeItem("image");
           }
         }
       xhr.send(form);
@@ -392,6 +420,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     //set the received image
     getImageFromScreenshot: function(image){
       this.image = image.src; 
+      this.saveImage();
     },
 
     //use vue-toasted to display an error
@@ -523,6 +552,10 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
 
   .screen{
     display:none;
+  }
+
+  .cancel{
+    cursor:pointer;
   }
 
   @media (max-width: 900px) {
