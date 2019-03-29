@@ -32,53 +32,51 @@
 <script src="../src/tracking.js"></script>
 
 <script>
-var authorizeButton;
+  var authorizeButton;
 
-import TakePhoto from './TakePhoto.vue';
-import ImportPhoto from './ImportPhoto.vue';
-import UploadPhoto from './UploadPhoto.vue';
-import Camera from './Camera.vue';
-import { Email } from '../smtp.js';
-import ProgressBar from 'vue-simple-progress'
+  import TakePhoto from './TakePhoto.vue';
+  import ImportPhoto from './ImportPhoto.vue';
+  import UploadPhoto from './UploadPhoto.vue';
+  import Camera from './Camera.vue';
+  import { Email } from '../smtp.js';
+  import ProgressBar from 'vue-simple-progress';
 
-export default {
+  export default {
+    name: 'Postiterie',
+    components: {
+      TakePhoto,
+      ImportPhoto,
+      UploadPhoto,
+      Camera,
+      ProgressBar
+    },
+    data () {
+      return {
+        image: null,
+        results: [],
+        authorized: false,
+        link: null,
+        directLink: null,
+        email: "",
+        camera : false,
+        useGmail: true,
+        progressIndex: 0,
+        progress: false,
+        progressPercentage: 0,
+        isEmailValid: false
+      }
+    },
 
-  name: 'Postiterie',
-  components: {
-    TakePhoto,
-    ImportPhoto,
-    UploadPhoto,
-    Camera,
-    ProgressBar
-  },
-  data () {
-    return {
-      image: null,
-      results: [],
-      authorized: false,
-      link: null,
-      directLink: null,
-      email: "",
-      camera : false,
-      useGmail: true,
-      progressIndex: 0,
-      progress: false,
-      progressPercentage: 0,
-      isEmailValid: false
-    }
-  },
+    created: function(){
+      if (localStorage.getItem('image')){
+        this.image = localStorage.getItem('image');
+      }
+    },
 
-  created: function(){
-    if (localStorage.getItem('image')){
-      this.image = localStorage.getItem('image');
-    }
-  },
- 
     methods: {
 
       //  updateEmail
       //  update the filename when the value from UploadPhoto's component is updated
-      //
       updateEmail: function (newEmail, isEmailValid) {
         this.email = newEmail;
         this.isEmailValid = isEmailValid;
@@ -99,66 +97,65 @@ export default {
         let image = new Image();
         image.src = canvas.toDataURL();
         return image;
+      },
 
-    },
+      /*
+        FUNCTION crop
+        Crop an image using the coordinates and return its imageData
+        IN : x, y (numbers) coordinates from which to start croping
+            width, height (numbers) length to crop
+        OUT: imageData
+      */
+      crop: function( x, y, width, height){
+        let canvas = document.createElement('canvas');
+        let context = canvas.getContext('2d');
+        let img = document.getElementById('preview');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        context.drawImage(img, 0, 0);
+        return context.getImageData(x, y, width, height);
+      },
 
-    /*
-      FUNCTION crop
-      Crop an image using the coordinates and return its imageData
-      IN : x, y (numbers) coordinates from which to start croping
-           width, height (numbers) length to crop
-      OUT: imageData
-    */
-    crop: function( x, y, width, height){
-      let canvas = document.createElement('canvas');
-      let context = canvas.getContext('2d');
-      let img = document.getElementById('preview');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      context.drawImage(img, 0, 0);
-      return context.getImageData(x, y, width, height);
-    },
+      /*
+        FUNCTION getImage
+        get the uploaded image and start the tracking
+        IN : fieldName : the fieldName ;)
+            file : the image
+      */
+      getImage: function(fieldName, file) {
+              this.link = null;
+              let imageFile = file[0];
+              let formData = new FormData();
+              let imageURL = URL.createObjectURL(imageFile);
+              formData.append(fieldName, imageFile);
+              this.image=imageURL;
+              this.saveImage();
+              var myImg = document.getElementById("preview");
+              var realWidth = myImg.width;
+              var realHeight = myImg.naturalHeight;
+      },
 
-    /*
-      FUNCTION getImage
-      get the uploaded image and start the tracking
-      IN : fieldName : the fieldName ;)
-           file : the image
-    */
-    getImage: function(fieldName, file) {
-            this.link = null;
-            let imageFile = file[0];
-            let formData = new FormData();
-            let imageURL = URL.createObjectURL(imageFile);
-            formData.append(fieldName, imageFile);
-            this.image=imageURL;
-            this.saveImage();
-            var myImg = document.getElementById("preview");
-            var realWidth = myImg.width;
-            var realHeight = myImg.naturalHeight;
-    },
+      //increment and update de progressBar
+      incrementProgressBar: function(){
+          this.progressIndex ++;
+          this.progressPercentage = (this.progressIndex * 100) / this.progressMax;
+      },
 
-    //increment and update de progressBar
-    incrementProgressBar: function(){
-        this.progressIndex ++;
-        this.progressPercentage = (this.progressIndex * 100) / this.progressMax;
-    },
+      //remove the image from the localStorage
+      removeImage: function(){
+          this.image = null;
+          localStorage.removeItem("image");
+      },
 
-    removeImage: function(){
-        this.image = null;
-        localStorage.removeItem("image");
-    },
-
-    /*
-        FUNCTION tracking
-        Track post-its and add them to results[]
-        Then, send the file
-        TODO : investigate odd behavior --> the function doesn't work if not started from a onclick event (likely due to tracker.on('track', function(event))) )
+      /*
+          FUNCTION tracking
+          Track post-its and add them to results[]
+          Then, send the file
+          TODO : investigate odd behavior --> the function doesn't work if not started from a onclick event (likely due to tracker.on('track', function(event))) )
       */
       tracking: function () {
-
         if(this.useGmail == false && this.email.length >= 1 && !this.isEmailValid){
-          this.displayError("Oups, votre email n'est pas valide, corrigez la et réessayez.")
+          this.displayError("Oups, votre email n'est pas valide, corrigez la et réessayez.");
         }
         else{
 
@@ -167,14 +164,12 @@ export default {
           this.temps = [];
           this.pos = [];
           this.progress = true;
-
           this.progressIndex = 0;
           this.progressPercentage = 0;
-          
+            
           let tracker = new tracking.ColorTracker(['magenta', 'cyan', 'yellow']);
           tracker.on('track', function (event) {
-            let images = event.data;
-            
+            let images = event.data;   
             $this.progressMax = images.length + 2;
             $this.progressPercentage = ($this.progressIndex * 100) / $this.progressMax;
             $this.incrementProgressBar();
@@ -191,7 +186,7 @@ export default {
                   color: colorHexa
                 }))
                 let croppedImage = $this.imageDataToImage(croppedImageData);
-                $this.temps.push(croppedImage.src)
+                $this.temps.push(croppedImage.src);
                 $this.results.push(croppedImage);
                 $this.incrementProgressBar();
 
@@ -217,66 +212,60 @@ export default {
           });
           tracking.track('#preview', tracker);
         }
-    },
+      },
 
-    // function colorToHexa
-    // param : the color detected by the tracker
-    // return : the hexadecimal code of the color
-    colorToHexa: function(color){
-      if(color=="yellow"){
-        return "#ffff00";
-      }
-      if(color=="magenta"){
-        return "#ff0066";
-      }
-      if(color=="cyan"){
-        return "#00ccff";
-      }
-    },
+      // function colorToHexa
+      // param : the color detected by the tracker
+      // return : the hexadecimal code of the color
+      colorToHexa: function(color){
+        if(color=="yellow"){
+          return "#ffff00";
+        }
+        if(color=="magenta"){
+          return "#ff0066";
+        }
+        if(color=="cyan"){
+          return "#00ccff";
+        }
+      },
 
 
-    // function resultToXML
-    // TODO
-    // return the XML from the result array[];
-    resultToXML: function(){
-      let $this = this;
-      let xml = process.env.VUE_APP_XML_ENTETE;
-      // adds the background shapes of the post its
-      this.temps.forEach(function (el, index) {
-        xml+=$this.forXmlBackground(el, index)
-      })
-      xml += '<mxCell id="layerParent" value="Post-its" parent="0"/>'
-      // adds the post-its themselves
-      this.temps.forEach(function (el, index) {
-        xml+=$this.forXmlPostIT(el, index)
-      })
-      xml+='</root></mxGraphModel>'
-      return xml;
-    },
+      // function resultToXML
+      // TODO
+      // return the XML from the result array[];
+      resultToXML: function(){
+        let $this = this;
+        let xml = process.env.VUE_APP_XML_ENTETE;
+        // adds the background shapes of the post its
+        this.temps.forEach(function (el, index) {
+          xml+=$this.forXmlBackground(el, index);
+        })
+        xml += '<mxCell id="layerParent" value="Post-its" parent="0"/>';
+        // adds the post-its themselves
+        this.temps.forEach(function (el, index) {
+          xml+=$this.forXmlPostIT(el, index);
+        })
+        xml+='</root></mxGraphModel>';
+        return xml;
+      },
 
-    // creates the xml code for the picture of the post it
-    // params : index -> the index of the picture
-    // el -> the picture
-    // returns : the xml code
-    forXmlPostIT(el, index) {
-      let base = el.replace(";base64", "");
-      return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}" value="" 
-style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=${base};"
-            vertex="1" parent="layerParent">
-      <mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
-    },
+      // creates the xml code for the picture of the post it
+      // params : index -> the index of the picture
+      // el -> the picture
+      // returns : the xml code
+      forXmlPostIT(el, index) {
+        let base = el.replace(";base64", "");
+        return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=${base};"vertex="1" parent="layerParent"><mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
+      },
 
-    // creates the xml code for the shape of the post it in the background layer
-    // params : index -> the index of the picture
-    // el -> the picture
-    // returns : the xml code
-    forXmlBackground(el, index) {
-      let base = el.replace(";base64", "");
-      return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}-rec" value=""
-      style="shape=rectangle;fillColor=${this.pos[index].color};"
-             vertex="1" parent="1">
-      <mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
-    },
+      // creates the xml code for the shape of the post it in the background layer
+      // params : index -> the index of the picture
+      // el -> the picture
+      // returns : the xml code
+      forXmlBackground(el, index) {
+        let base = el.replace(";base64", "");
+        return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}-rec" value=""style="shape=rectangle;fillColor=${this.pos[index].color};" vertex="1" parent="1"><mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
+      },
 
       ///////////////////////////////
       //  GOOGLE DRIVE FUNCTIONS   //
@@ -373,7 +362,6 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
             
             //the link to the file on google drive
             this.link = 'https://drive.google.com/file/d/' + xhr.response.id + '/view';
-
             this.progress = false;
 
             //the link to the file on drawIO (if already allowed on google drive)
@@ -386,8 +374,6 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
             else {
               this.directLink = "";
             }
-
-           
 
             //if the user chose to use his gmail email, reset email to his gmail email
             if(this.useGmail){
@@ -414,37 +400,37 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
             localStorage.removeItem("image");
           }
         }
-      xhr.send(form);
-    },
+        xhr.send(form);
+      },
 
-    //set the received image
-    getImageFromScreenshot: function(image){
-      this.image = image.src; 
-      this.saveImage();
-    },
+      //set the received image
+      getImageFromScreenshot: function(image){
+        this.image = image.src; 
+        this.saveImage();
+      },
 
-    //use vue-toasted to display an error
-    displayError: function(message){
-      this.$toasted.show(message, {
-        theme: "bubble",
-        position: "top-left",
-        duration : 10000,
-        icon: 'error'
-      });
-    },
+      //use vue-toasted to display an error
+      displayError: function(message){
+        this.$toasted.show(message, {
+          theme: "bubble",
+          position: "top-left",
+          duration : 10000,
+          icon: 'error'
+        });
+      },
 
-    // function prepareMail 
-    // TODO
-    // no IO
-    // call the mail API or our mail server
-    prepareMail: function(){
+      // function prepareMail 
+      // TODO
+      // no IO
+      // call the mail API or our mail server
+      prepareMail: function(){
 
         let body = "";
         if (this.directLink){
-          body = `Voici un lien vers le schéma que vous venez de générer ${this.link} Vous n'avez plus qu'à ouvrir le schéma avec drawIO. Si vous l'avez déjà fait, utilisez plutôt ce lien : ${this.directLink}`
+          body = `Voici un lien vers le schéma que vous venez de générer ${this.link} Vous n'avez plus qu'à ouvrir le schéma avec drawIO. Si vous l'avez déjà fait, utilisez plutôt ce lien : ${this.directLink}`;
         } 
         else{
-          body = `Voici un lien vers le schéma que vous venez de générer ${this.link} Vous n'avez plus qu'à ouvrir le schéma avec drawIO.`
+          body = `Voici un lien vers le schéma que vous venez de générer ${this.link} Vous n'avez plus qu'à ouvrir le schéma avec drawIO.`;
         }
 
         //  Using smtpjs to send mail
@@ -457,21 +443,20 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
           From : process.env.VUE_APP_SMTP_EMAIL,
           Subject : "Nouveau schéma généré",
           Body : body
-      }).catch(e => {
+        }).catch(e => {
           this.displayError("Oups! Il y a eu une erreur lors de l'envoi du mail :/");
-      });
-      
-    }
+        });   
+      }
+    },
 
-  },
-  mounted: function(){
-    this.handleClientLoad(); //gapi initialisation
+    mounted: function(){
+      //gapi initialisation
+      this.handleClientLoad();
+    }
   }
-}
 </script>
 
 <style>
-
   .button {
     box-sizing: border-box;
     text-align: center;
@@ -523,15 +508,14 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     font-size: 1em!important;
   }
 
-    @media (min-width: 900px) {
-       .vue-simple-progress{
-        width: 40vw;
-      }
+  @media (min-width: 900px) {
+    .vue-simple-progress{
+      width: 40vw;
     }
+  }
 </style>
 
 <style scoped>
-
   .container {
     display: flex;
     flex-direction: column;
@@ -559,16 +543,15 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
   }
 
   @media (max-width: 900px) {
-  .container {
-      width:100vw;
-      margin-left:0;
+    .container {
+        width:100vw;
+        margin-left:0;
+    }
+    .mobile{
+      display:none;
+    }
+    .screen{
+      display:initial;
+    }
   }
-  .mobile{
-    display:none;
-  }
-  .screen{
-    display:initial;
-  }
-}
-  
 </style>
