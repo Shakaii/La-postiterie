@@ -11,7 +11,6 @@ export default {
 </script>
 
 <style scoped>
-
 header {
     margin-left:25vw;
     width:50vw;
@@ -26,7 +25,6 @@ header {
     padding : 4px 12px 5px 0px;
     border-radius : 0 0 15px 15px;
     border-top-style:solid;
-
 }
 
 img{
@@ -34,12 +32,11 @@ img{
 }
 
 @media (max-width: 900px) {
-  header {
-      width:100vw;
-      margin-left:0;
-      border-radius : 0 0 0 0;
-      border-top-style:none;
-  }
+    header {
+        width:100vw;
+        margin-left:0;
+        border-radius : 0 0 0 0;
+        border-top-style:none;
+    }
 }
-
 </style>
