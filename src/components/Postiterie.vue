@@ -115,31 +115,27 @@
         context.drawImage(img, 0, 0);
         return context.getImageData(x, y, width, height);
       },
-
-      /*
-        FUNCTION getImage
-        get the uploaded image and start the tracking
-        IN : fieldName : the fieldName ;)
-            file : the image
-      */
-      getImage: function(fieldName, file) {
-              this.link = null;
-              let imageFile = file[0];
-              let formData = new FormData();
-              let imageURL = URL.createObjectURL(imageFile);
-              formData.append(fieldName, imageFile);
-              this.image=imageURL;
-              this.saveImage();
-              var myImg = document.getElementById("preview");
-              var realWidth = myImg.width;
-              var realHeight = myImg.naturalHeight;
-      },
-
+      
       //increment and update de progressBar
       incrementProgressBar: function(){
           this.progressIndex ++;
           this.progressPercentage = (this.progressIndex * 100) / this.progressMax;
       },
+
+    /*
+      FUNCTION getImage
+      get the uploaded image and start the tracking
+      IN : fieldName : the fieldName ;)
+           file : the image
+    */
+    getImage: function(fieldName, file) {
+            this.link = null;
+            let imageFile = file[0];
+            let formData = new FormData();
+            let imageURL = URL.createObjectURL(imageFile);
+            formData.append(fieldName, imageFile);
+            this.image=imageURL;
+    },
 
       //remove the image from the localStorage
       removeImage: function(){
