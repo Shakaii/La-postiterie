@@ -8,7 +8,7 @@
     <UploadPhoto  v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="!progress && image && !link"/>
     <progressBar text-position="middle" text="chargement en cours ..." v-if="progress" size="big" v-bind:val="progressPercentage"></progressBar>
 
-    <div v-if="image" class="cancel" v-on:click="removeImage">
+    <div v-if="image && !link && !progress" class="cancel" v-on:click="removeImage">
       <i class="material-icons">cancel_presentation</i>
     </div>
 
@@ -122,20 +122,21 @@
           this.progressPercentage = (this.progressIndex * 100) / this.progressMax;
       },
 
-    /*
-      FUNCTION getImage
-      get the uploaded image and start the tracking
-      IN : fieldName : the fieldName ;)
-           file : the image
-    */
-    getImage: function(fieldName, file) {
-            this.link = null;
-            let imageFile = file[0];
-            let formData = new FormData();
-            let imageURL = URL.createObjectURL(imageFile);
-            formData.append(fieldName, imageFile);
-            this.image=imageURL;
-    },
+      /*
+        FUNCTION getImage
+        get the uploaded image and start the tracking
+        IN : fieldName : the fieldName ;)
+            file : the image
+      */
+      getImage: function(fieldName, file) {
+        this.link = null;
+        let imageFile = file[0];
+        let formData = new FormData();
+        let imageURL = URL.createObjectURL(imageFile);
+        formData.append(fieldName, imageFile);
+        this.image=imageURL;
+        this.saveImage();
+      },
 
       //remove the image from the localStorage
       removeImage: function(){
@@ -250,18 +251,24 @@
       // el -> the picture
       // returns : the xml code
       forXmlPostIT(el, index) {
-        let base = el.replace(";base64", "");
-        return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=${base};"vertex="1" parent="layerParent"><mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
-      },
+      let base = el.replace(";base64", "");
+      return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}" value="" 
+style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=${base};"
+            vertex="1" parent="layerParent">
+      <mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
+    },
 
       // creates the xml code for the shape of the post it in the background layer
       // params : index -> the index of the picture
       // el -> the picture
       // returns : the xml code
       forXmlBackground(el, index) {
-        let base = el.replace(";base64", "");
-        return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}-rec" value=""style="shape=rectangle;fillColor=${this.pos[index].color};" vertex="1" parent="1"><mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
-      },
+      let base = el.replace(";base64", "");
+      return `<mxCell id="xVlBypw9ISABlRlfdyYR-${index}-rec" value=""
+      style="shape=rectangle;fillColor=${this.pos[index].color};"
+             vertex="1" parent="1">
+      <mxGeometry x="${this.pos[index].x}" y="${this.pos[index].y}" width="${this.pos[index].width}" height="${this.pos[index].height}" as="geometry" /></mxCell>`
+    },
 
       ///////////////////////////////
       //  GOOGLE DRIVE FUNCTIONS   //
