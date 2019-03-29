@@ -35,11 +35,11 @@ export default {
   --big-button-shadow : #656565;
   --big-button-active-shadow : #478BF9;
   
-  --small-button-background : #6ED2D0;
+  --small-button-background : #00FDC8;
   --small-button-color : rgba(0,0,0,0.7);
   --small-button-icon : rgba(0,0,0,0.55);
   --small-button-shadow : #656565;
-  --small-button-active-shadow : #6ED2D0;
+  --small-button-active-shadow : #00FDC8;
 
   --round-button-background : #FF6B81;
   --round-button-color : rgba(0,0,0,0.7);
@@ -63,5 +63,8 @@ body {
     background-color: var(--body-background);
 }
 
+.toasted-container{
+  font-family: 'Fira Sans', sans-serif;
+}
 </style>
 

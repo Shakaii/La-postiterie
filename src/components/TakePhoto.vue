@@ -36,4 +36,10 @@ export default {
     color: var(--big-button-icon);
 }
 
+@media (min-width: 900px) {
+    .big-button-container{
+        display:none;
+    }
+}
+
 </style>
