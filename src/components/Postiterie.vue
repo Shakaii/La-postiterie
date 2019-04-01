@@ -398,7 +398,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
         this.image = image.src; 
       },
 
-      //use vue-toasted to display an error
+      //use elemeIO notify to display an error
       displayError: function(message){
         this.$notify({
           title: 'Oups !',
