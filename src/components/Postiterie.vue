@@ -8,10 +8,6 @@
     <UploadPhoto  v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="!progress && image && !link"/>
     <progressBar text-position="middle" text="chargement en cours ..." v-if="progress" size="big" v-bind:val="progressPercentage"></progressBar>
 
-    <div v-if="image && !link && !progress" class="cancel" v-on:click="removeImage">
-      <i class="material-icons">cancel_presentation</i>
-    </div>
-
     <div class="info mobile" v-if="!image && !link">
        Importez une photo pour générer un schéma
     </div>
@@ -64,12 +60,6 @@
         progress: false,
         progressPercentage: 0,
         isEmailValid: false
-      }
-    },
-
-    created: function(){
-      if (localStorage.getItem('image')){
-        this.image = localStorage.getItem('image');
       }
     },
 
@@ -135,7 +125,6 @@
         let imageURL = URL.createObjectURL(imageFile);
         formData.append(fieldName, imageFile);
         this.image=imageURL;
-        this.saveImage();
       },
 
       //remove the image from the localStorage
@@ -317,12 +306,6 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
         this.useGmail = useGmail;
       },
 
-      saveImage: function(){
-        if (this.image){
-          localStorage.setItem('image',this.image);
-        }
-      },
-
       //upload the file to google drive
       sendFile: function () {
         let $this = this;
@@ -409,7 +392,6 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
       //set the received image
       getImageFromScreenshot: function(image){
         this.image = image.src; 
-        this.saveImage();
       },
 
       //use vue-toasted to display an error
@@ -539,10 +521,6 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
 
   .screen{
     display:none;
-  }
-
-  .cancel{
-    cursor:pointer;
   }
 
   @media (max-width: 900px) {
