@@ -1,18 +1,14 @@
 <template>
     <div class="upload-container">
-      <div class="input">
-          <div class="checkboxContainer">
-            <input id="checkbox" type="checkbox" v-model="useGmail" v-on:change="updateGmail">
-            <label for="checkbox">Envoyer le lien sur mon adresse gmail</label><br><br>
-        </div>
-        <input v-bind:class="{ formValid: (isEmailValid && email.length >= 1), formInvalid: (!isEmailValid && email.length >= 1)}" @change="checkEmail" v-if="useGmail == false" id="email" placeholder="email" type="text" v-model="email">
-      </div>
-      <div class="round-button-container" >
-        <button @click="uploadClick" class="round-button button">
-            <i class="material-icons">cloud_upload</i>
-        </button>
-        <br><br>Exporter sur google drive
-      </div>             
+        <el-button type="primary" plain @click="uploadClick"> Exporter sur google drive <i class="material-icons">cloud_upload</i></el-button>
+        <div class="input">
+            <div class="checkboxContainer">
+                <el-checkbox id="checkbox" type="checkbox" v-model="useGmail" v-on:change="updateGmail">Envoyer le lien sur mon adresse gmail</el-checkbox>
+            </div>
+            <el-input v-bind:class="{ formValid: (isEmailValid && email.length >= 1), formInvalid: (!isEmailValid && email.length >= 1)}" @change="checkEmail" v-if="useGmail == false" id="email" placeholder="adresse email" type="text" v-model="email">
+                <template slot="prepend"><i class="material-icons">email</i></template>
+            </el-input>
+        </div>     
     </div> 
 </template>
 
@@ -66,77 +62,29 @@ export default {
 
 <style scoped>
 
-    label{
-        margin-left:1em;
-    }
-
     .checkboxContainer{
+        margin-top: 1em;
         display:flex;
         flex-direction:row;
         justify-content: flex-start;
     }
 
-    .upload-container .input{
-        width: calc(60% - 1em);
-        margin-right: 1em;
-        box-sizing: border-box;
-    }
-
-
-    .upload-container .input #email{
-        margin-top: 1em;
-        background-color: rgba(0,0,0,0);
-        border-style:none;
-        border-bottom-style:solid;
-        border-bottom-color: black;
-        width: 100%;
-        font-family: 'Fira Sans', sans-serif;
-    }
-
     .formInvalid{
-        border-bottom-color: red!important;
+        border-color: #E6A23C!important;
+        border-style: solid;
+        border-width: 1px;
+        border-radius:5px;
     }
 
     .formValid{
-        border-bottom-color:green!important;
-    }
-
-    .upload-container .input input::placeholder{
-        font-weight: 100;
-        text-transform: uppercase
-    }
-
-    .round-button-container{
-        width: 20%;
-        text-align: center;
-    }
-
-    .round-button:active{
-        box-shadow: 4px 4px 5px var(--round-button-active-shadow);
-    }
-
-    .round-button{
-        background-color: var(--round-button-background);       
-        box-sizing: border-box;
-        text-align: center;
-        vertical-align: middle;
-        padding: 1em;
-        cursor: pointer;
-        border-style: none;
-        border-radius: 20px;
-        font-weight: 900;
-        transition: 0.3s;
-        box-shadow: 5px 5px 5px var(--round-button-shadow);
-        color: var(--round-button-color);
-    }
-
-    .round-button i{
-        color: var(--round-button-icon);
+        border-color:#67C23A!important;
+        border-style: solid;
+        border-width: 1px;
+        border-radius:5px;
     }
 
     .upload-container{
         width: 100%;
-        margin-top: 1em;
         display: flex;
         flex-direction: row;
         align-items:center;
@@ -144,22 +92,20 @@ export default {
         user-select: none;
     }
 
-    @media (min-width: 900px) {
-       .upload-container .input{
-            width: initial;
-        }
-        .upload-container {
-            flex-direction: column;
-            padding:1em;
-        }
-        .checkboxContainer{
-            margin-bottom:1em;
-        }
-        #email{
-            margin-bottom: 1em;
-        }
-        .round-button{
-            padding: 2em 3em 2em 3em;
-        }
+    .upload-container .input{
+        width: initial;
     }
+    
+    .upload-container {
+        flex-direction: column;
+    }
+
+    .checkboxContainer{
+        margin-bottom:1em;
+    }
+
+    #email{
+        margin-bottom: 1em;
+    }
+    
 </style>

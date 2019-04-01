@@ -3,22 +3,26 @@
   <div class="container">
 
     <Camera v-on:closeCamera="camera = false" v-on:screenshotTaken="getImageFromScreenshot" v-if="camera" />
-    <TakePhoto v-on:clicked="camera = true" @fileupload="getImage" />
+    
+    <TakePhoto class="mobile" v-on:clicked="camera = true" @fileupload="getImage" />
     <ImportPhoto  @fileupload="getImage" />
-    <UploadPhoto  v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="!progress && image && !link"/>
-    <progressBar text-position="middle" text="chargement en cours ..." v-if="progress" size="big" v-bind:val="progressPercentage"></progressBar>
 
-    <div class="info mobile" v-if="!image && !link">
+    <UploadPhoto  v-on:updateGmail="updateGmail" @uploadClick="tracking" @inputChange="updateEmail" v-if="!progress && image && !link"/>
+    <progressBar text-position="middle" text="chargement en cours ..." v-if="progress"  size="big" v-bind:val="progressPercentage"></progressBar>
+
+    <div class="info screen" v-if="!image && !link">
        Importez une photo pour générer un schéma
     </div>
 
-    <div class="info screen" v-if="!image && !link">
+    <div class="info mobile" v-if="!image && !link">
       Prenez une photo ou importez en une depuis votre galerie pour générer un schéma
     </div>
 
-    <div class="big-button-container link" v-if="link">
-      <a class="button big-button" target="_blank" v-bind:href="link">Ouvrir le schéma avec drawIO<br><i class="material-icons">open_in_new</i></a>
-    </div>
+    <a target="_blank" v-bind:href="link">
+      <el-button v-if="link"  type="primary" plain>
+        Ouvrir le schéma avec drawIO <i class="material-icons">open_in_new</i>
+      </el-button>
+    </a>
 
     <!-- has to be here for tracking-->
     <img style="display:none" id="preview" :src="image" alt="">
@@ -141,7 +145,7 @@
       */
       tracking: function () {
         if(this.useGmail == false && this.email.length >= 1 && !this.isEmailValid){
-          this.displayError("Oups, votre email n'est pas valide, corrigez la et réessayez.");
+          this.displayError("Votre email n'est pas valide, corrigez la et réessayez.");
         }
         else{
 
@@ -190,7 +194,7 @@
                     });
                 }
               }else{
-                $this.displayError("Oups! Aucun post-it n'a été détecté dans cette image. Veuillez réessayer si c'est anormal.");
+                $this.displayError("Aucun post-it n'a été détecté dans cette image. Veuillez réessayer si c'est anormal.");
                 $this.progress = false;
                 $this.image = null;
               }
@@ -373,7 +377,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
                 this.email = gmail;
               } 
               else {
-                this.displayError("Oups! Nous n'avons pas pu récupérer l'adresse mail associée à votre compte google :/");
+                this.displayError("Nous n'avons pas pu récupérer l'adresse mail associée à votre compte google :/");
               }
             }
             //if email is set, send mail else redirect to the file
@@ -396,11 +400,11 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
 
       //use vue-toasted to display an error
       displayError: function(message){
-        this.$toasted.show(message, {
-          theme: "bubble",
-          position: "top-left",
-          duration : 10000,
-          icon: 'error'
+        this.$notify({
+          title: 'Oups !',
+          message: message,
+          type: 'warning',
+          position: 'top-left'
         });
       },
 
@@ -429,7 +433,7 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
           Subject : "Nouveau schéma généré",
           Body : body
         }).catch(e => {
-          this.displayError("Oups! Il y a eu une erreur lors de l'envoi du mail :/");
+          this.displayError("Il y a eu une erreur lors de l'envoi du mail :/");
         });   
       }
     },
@@ -442,18 +446,8 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
 </script>
 
 <style>
-  .button {
-    box-sizing: border-box;
-    text-align: center;
-    vertical-align: middle;
-    padding: 1.5em;
-    cursor: pointer;
-    border-style: none;
-    border-radius: 4px;
-    font-weight: 900;
-    transition: 0.3s;
-    box-shadow: 5px 5px 5px #656565;
-    text-decoration: none;
+  .el-button{
+    margin-top:1em!important;
   }
 
   i {
@@ -461,31 +455,15 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     vertical-align: middle;
   }
 
-  .big-button {
-    background-color: var(--big-button-background);
-    color: var(--big-button-color);
-  }
-
-  .big-button-container:active .big-button {
-    box-shadow: 4px 4px 5px var(--big-button-active-shadow);
-  }
-
-  .big-button-container .button {
-    width: 80%;
-  }
-
-  .big-button-container {
-    width: 100%;
-    margin-top: 1em;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    user-select: none;
-  }
-
   .vue-simple-progress{
+    border-radius:10px;
     margin-top: 1em;
     width: 80vw;
+  }
+
+  .vue-simple-progress-bar{
+    border-radius:10px;
+    background: rgb(64, 158, 255) none repeat scroll 0% 0%!important;
   }
 
   .vue-simple-progress-text{
@@ -493,14 +471,33 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
     font-size: 1em!important;
   }
 
-  @media (min-width: 900px) {
+  .mobile{
+    display:none!important;
+  }
+
+  @media (max-width: 900px) {
+
     .vue-simple-progress{
       width: 40vw;
+    }
+
+    .container {
+      width:100vw;
+      margin-left:0;
+    }
+
+    .mobile{
+      display:initial!important
+    }
+
+    .screen{
+      display:none!important;
     }
   }
 </style>
 
 <style scoped>
+
   .container {
     display: flex;
     flex-direction: column;
@@ -513,26 +510,5 @@ style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;ver
   .info {
     margin-top: 1em;
     text-align: center;
-  }
-
-  .link i{
-    color: var(--small-button-icon);
-  }
-
-  .screen{
-    display:none;
-  }
-
-  @media (max-width: 900px) {
-    .container {
-        width:100vw;
-        margin-left:0;
-    }
-    .mobile{
-      display:none;
-    }
-    .screen{
-      display:initial;
-    }
   }
 </style>

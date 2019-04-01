@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "ejs": "^2.6.1",
+    "element-ui": "^2.7.0",
     "googleapis": "^27.0.0",
     "material-icons": "^0.3.0",
     "raw-loader": "^2.0.0",

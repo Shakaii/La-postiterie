@@ -25,36 +25,11 @@ export default {
 
 :root{
   --body-background: rgba(0,0,0,0.05); 
-
-  --header-background: #478BF9;
-  --header-color: rgba(0,0,0,0.6);
-
-  --big-button-background : #478BF9;
-  --big-button-color : rgba(0,0,0,0.7);
-  --big-button-icon : rgba(0,0,0,0.55);
-  --big-button-shadow : #656565;
-  --big-button-active-shadow : #478BF9;
-  
-  --small-button-background : #00FDC8;
-  --small-button-color : rgba(0,0,0,0.7);
-  --small-button-icon : rgba(0,0,0,0.55);
-  --small-button-shadow : #656565;
-  --small-button-active-shadow : #00FDC8;
-
-  --round-button-background : #FF6B81;
-  --round-button-color : rgba(0,0,0,0.7);
-  --round-button-icon : rgba(0,0,0,0.55);
-  --round-button-shadow : #656565;
-  --round-button-active-shadow : #FF6B81;
 }
 
-@font-face {
-    font-family: 'Fira Sans', sans-serif;
-    src: url("https://fonts.googleapis.com/css?family=Fira+Sans:100,400,900");
-}
 
 #app {
-    font-family: 'Fira Sans', sans-serif;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
 
 body {
@@ -63,8 +38,8 @@ body {
     background-color: var(--body-background);
 }
 
-.toasted-container{
-  font-family: 'Fira Sans', sans-serif;
+.el-notification{
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif!important;
 }
 </style>
 
