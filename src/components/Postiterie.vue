@@ -7,6 +7,7 @@
     />
 
     <TakePhoto class="mobile" @clicked="camera = true" @fileupload="getImage" />
+    
     <ImportPhoto @fileupload="getImage" />
 
     <UploadPhoto
@@ -15,7 +16,8 @@
       @uploadClick="tracking"
       @inputChange="updateEmail"
     />
-    <progressBar
+
+    <ProgressBar
       v-if="progress"
       text-position="middle"
       text="chargement en cours ..."
@@ -177,7 +179,7 @@ export default {
         !this.isEmailValid
       ) {
         this.displayError(
-          "Votre email n'est pas valide, corrigez la et réessayez."
+          "Votre adresse email n'est pas valide, corrigez la et réessayez."
         );
       } else {
         let $this = this;

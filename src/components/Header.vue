@@ -1,7 +1,7 @@
 <template>
   <el-header>
     <img
-      alt="a postit" 
+      alt="La Postiterie" 
       src="../assets/logoandtitle.png" 
     />
   </el-header>
