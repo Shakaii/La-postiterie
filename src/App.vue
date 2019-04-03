@@ -25,11 +25,11 @@ export default {
 
 :root{
   --body-background: rgba(0,0,0,0.05); 
+  --default-font: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
 }
 
-
 #app {
-    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+    font-family: var(--default-font);
 }
 
 body {
@@ -39,7 +39,7 @@ body {
 }
 
 .el-notification{
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif!important;
+  font-family: var(--default-font)!important;
 }
 </style>
 
