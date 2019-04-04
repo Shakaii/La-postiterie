@@ -52,7 +52,7 @@ export default {
             rect.color = tracker.customColor;
           }
           context.strokeStyle = rect.color;
-          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+          context.strokeRect(rect.x + rect.width/2 , rect.y , rect.width/2 , rect.height);
           context.fillStyle = "#fff";
         });
       });
@@ -67,11 +67,11 @@ export default {
       canvas.height = video.height;
       ctx.drawImage(video, 0, 0);
       //closing the camera once the screen is taken
-      this.$emit("closeCamera");
       canvas.toBlob(blob => {
         let img = document.createElement("img");
         img.src = window.URL.createObjectURL(blob);
         this.$emit("screenshotTaken", img);
+        this.$emit("closeCamera");
       });
     },
 
@@ -85,7 +85,6 @@ export default {
 
 <style scoped>
 video {
-  margin-top: -3em;
   background-color: black;
 }
 
@@ -95,6 +94,7 @@ canvas {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  margin-top: -3em;
 }
 
 .frame {

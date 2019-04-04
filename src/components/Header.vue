@@ -2,15 +2,23 @@
   <el-header>
     <img
       alt="La Postiterie" 
-      src="../assets/logoandtitle.png" 
+      :src="logoAndTitle"
     />
   </el-header>
 </template>
 
 <script>
+
+import logoAndTitle from "../assets/logoandtitle.png";
+
 export default {
-  name: "Header"
-};
+  name: "Header",
+  data() {
+    return {
+      logoAndTitle: logoAndTitle
+    }
+  }
+}
 </script>
 
 <style scoped>
