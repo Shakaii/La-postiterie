@@ -1,10 +1,10 @@
-# La postiterie
+![La postiterie](http://debaser.fr/Postiterie.png)
 
 ### Site informatif 
 
 [More details on our website (french only)](https://postiterie.wordpress.com/)
 
-![La postiterie](http://debaser.fr/La_Postiterie.png)
+![La postiterie](http://debaser.fr/La_Postiterie2.png)
 
 ## Before running 
 
