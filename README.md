@@ -1,5 +1,8 @@
 ![La postiterie](http://debaser.fr/Postiterie.png)
 
+You can visit the Postiterie at this url : http://debaser.fr/postiterie
+(keep in mind we need https in order to access the phone camera :/)
+
 ### Site informatif 
 
 [More details on our website (french only)](https://postiterie.wordpress.com/)
