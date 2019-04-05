@@ -48,16 +48,10 @@ export default {
       isEmailValid: false
     };
   },
-  mounted() {
-    //if email was saved we check it first at creation
-    if (this.email) {
-      this.checkEmail();
-    }
-  },
   created: function() {
     if (localStorage.getItem("email")) {
       this.email = localStorage.getItem("email");
-      this.inputChange();
+      this.checkEmail();
     }
   },
   methods: {

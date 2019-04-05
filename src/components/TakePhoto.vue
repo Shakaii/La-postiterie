@@ -11,7 +11,6 @@ export default {
     return {};
   },
   methods: {
-    //deals with the clicks
     clicked() {
       this.$emit("clicked");
     }
